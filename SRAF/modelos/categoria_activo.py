@@ -1,16 +1,16 @@
-class Categoria_Activo():
+class CategoriaActivo():
     def __init__(self,nombre ,descripcion ):
         self.id_categoria     = None
         self.nombre           = nombre
         self.descripcion      = descripcion
         
     def __str__(self):
-            return f"[{self.id_sede}] {self.nombre} {self.descripcion}"
+            return f"[{self.id_categoria}] {self.nombre} {self.descripcion}"
         
     def to_dict(self):
         
         return {
-            "id": self.id,
+            "id_categoria": self.id_categoria,
             "nombre": self.nombre,
             "descripcion": self.descripcion
             
@@ -23,6 +23,6 @@ class Categoria_Activo():
             datos["descripcion"]   
         )
         
-        categoria.id = datos["id"]
+        categoria.id_categoria = datos["id_categoria"]
         
         return categoria

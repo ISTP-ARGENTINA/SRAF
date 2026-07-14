@@ -8,11 +8,9 @@ class usuario():
         self.contraseña       = contraseña
         self.rol              = rol
         self.estado           = estado
-        self.fecha_creacion   = None
-        self.ultimo_acceso    = None
         
     def __str__(self):
-            return f"[{self.id_usuario}] {self.nombres} {self.apellidos} {self.nombre_usuario} {self.correo} {self.contraseña} {self.rol} {self.estado} {self.fecha_creacion} {self.ultimo_acceso}"
+            return f"[{self.id_usuario}] {self.nombres} {self.apellidos} {self.nombre_usuario} {self.correo} {self.contraseña} {self.rol} {self.estado}"
         
     @classmethod
     def from_dict(cls, datos):

@@ -11,7 +11,7 @@ class Sede():
     def to_dict(self):
         
         return{
-            "id": self.id,
+            "id": self.id_sede,
             "nombre": self.nombre,
             "direccion": self.direccion,
             "ciudad": self.ciudad
@@ -26,6 +26,6 @@ class Sede():
             datos["ciudad"]
         )
         
-        sede.id = datos["id"]
+        sede.id = datos["id_sede"]
         
         return sede

@@ -10,7 +10,7 @@ class Area():
     def to_dict(self):
         
         return {
-            "id": self.id,
+            "id": self.id_area,
             "nombre": self.nombre,
             "decripcion": self.descripcion
             
@@ -24,6 +24,6 @@ class Area():
             datos=["descripcion"]
         )
         
-        area.id = datos["id"]
+        area.id = datos["id_area"]
         
         return area
