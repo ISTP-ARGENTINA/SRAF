@@ -29,4 +29,5 @@ class InventarioFisico:
         )
         
         inventario.id_inventario = datos["id_inventario"]
+        
         return inventario
