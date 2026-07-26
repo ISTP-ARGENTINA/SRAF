@@ -23,3 +23,19 @@ class AjusteActivo():
             "id_activo":        self.id_activo,
             "id_usuario":       self.id_usuario
         }
+        
+    @classmethod
+    def form_dict(cls,datos):
+        ajuste = cls(
+            datos["fecha"],
+            datos["tipo_ajuste"],
+            datos["valor_anterior"],
+            datos["valor_nuevo"],
+            datos["observacion"],
+            datos["id_activo"],
+            datos["id_usuario"],
+        )
+        
+        ajuste.id_ajuste = datos["id_ajuste"]
+        
+        return ajuste
