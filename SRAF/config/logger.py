@@ -52,9 +52,7 @@ class logger:
             return
         for log in self._logs:
             print(
-                f"[{log['hora']}] "
-                f"{log['nivel']:8} "
-                f"{log['mensaje']} "
+                f"[{log['hora']}] {log['nivel']:8} {log['mensaje']} "
             )
     
     def limpiar(self):
