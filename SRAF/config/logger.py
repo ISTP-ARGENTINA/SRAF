@@ -20,9 +20,7 @@ class logger:
         
         entrada = {
             
-            "hora": hora,
-            "nivel": nivel,
-            "mensaje": mensaje
+            "hora": hora, "nivel": nivel, "mensaje": mensaje
         }
         
         self._logs.append(entrada)
