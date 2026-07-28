@@ -7,7 +7,8 @@ from modelos.proveedor import Proveedor
 class ProveedorDAO:
     def __init__(self):
         self.logger = logger()
-        
+    
+    #INSERTAR SEDE
     def insertar(self, proveedor):
         
         #abre la conexion sqñ
@@ -27,7 +28,7 @@ class ProveedorDAO:
         if cursor.fetchone():
             conn.close()
             
-            raise ProcessLookupError(
+            raise ProveedorDuplicadoError(
                 proveedor.numero_documento_proveedor
             )
         #procesa el registro
@@ -64,3 +65,5 @@ class ProveedorDAO:
         )
         
         return proveedor
+    
+
