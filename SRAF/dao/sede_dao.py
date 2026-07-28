@@ -132,5 +132,33 @@ class SedeDAO:
                 direccion=?,
                 ciudad=?
             WHERE id_sede=?
-        """,)
+        """,
+        nuevo_nombre,
+        nueva_direccion,
+        nueva_ciudad,
+        id_sede)
+        
+        conn.commit()
+        
+        conn.close()
+        
+        sede = Sede(
+            nuevo_nombre,
+            nueva_direccion,
+            nueva_ciudad
+        )
+        
+        sede.id_sede = id_sede
+        
+        self.logger.info(
             
+            f"Sede actualizada ID={id_sede}"
+        )
+        
+        return sede
+    
+    def eliminar(self,id_sede):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute
