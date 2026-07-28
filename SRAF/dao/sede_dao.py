@@ -51,9 +51,19 @@ class SedeDAO:
             )
         
         conn.commit()
-            
-            
-            
+        
+        cursor.execute("SELECT @@IDENTITY")
+        
+        sede.id_sede = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        self.logger.info(
+            f"Sede registrada ID={sede.id_sede}"
+        )
+        
+        return sede
+        
     def obtener_todo(self):
         
         conn = obtener_conexion()
