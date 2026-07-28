@@ -63,7 +63,7 @@ class SedeDAO:
         )
         
         return sede
-        
+
     def obtener_todo(self):
         
         conn = obtener_conexion()
@@ -72,14 +72,15 @@ class SedeDAO:
         
         cursor.execute("""
         
-                SELECT
+            SELECT
                 id_sede,
                 nombre,
                 direccion,
                 ciudad
-                FROM sede
+            
+            FROM sede
                 
-                ORDER BY nombre
+            ORDER BY nombre
         """)
         #lista donde se guardan las sedes
         sedes = []
@@ -91,3 +92,45 @@ class SedeDAO:
                 fila.direccion,
                 fila.ciudad
             )
+            
+            sede.id_sede = fila.id_sede
+            
+            sedes.append(sede)
+            
+        conn.close()
+            
+        return sedes
+    
+    def actualizar(self, id_sede, nombre=None, direccion=None, ciudad=None):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT *
+            FROM sede
+            WHERE id_sede = ?
+        """, id_sede)
+        
+        fila = cursor.fetchone()
+        
+        if fila is None:
+        
+            conn.close()
+            
+            raise SedeNoEncontradaError(
+                id_sede
+            )
+            
+        nuevo_nombre = nombre if nombre else fila.nombre
+        nueva_direccion = direccion if direccion else fila.direccion
+        nueva_ciudad = ciudad if ciudad else fila.ciudad
+        
+        cursor.execute("""
+            UPDATE sede
+            SET
+                nombre=?,
+                direccion=?,
+                ciudad=?
+            WHERE id_sede=?
+        """,)
+            
