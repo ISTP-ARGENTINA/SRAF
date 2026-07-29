@@ -52,3 +52,32 @@ class AreaDao:
         )
         
         return area
+    
+    def obtener_todos(self):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT
+                id_area,
+                nombre,
+                descripcion
+            FROM area
+            ORDER BYE nombre
+            """)
+        
+        areas = []
+        
+        for fila in cursor.fetchall():
+            
+            area = Area(
+                fila.nombre,
+                fila.descripcion
+            )
+            
+            area.id_area = fila.area
+            areas.append(area)
+            
+            conn.close()
+            
+            return areas
