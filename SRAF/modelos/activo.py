@@ -40,27 +40,27 @@ class Activo():
         "id_area": self.id_area
         }
         
-@classmethod
-def from_dict(cls,datos):
-    
-    activo = cls(
-        datos["codigo_patrimonial"],
-        datos["descripcion"],
-        datos["marca"],
-        datos["modelo"],
-        datos["serie"],
-        datos["tipo_comprobante"],
-        datos["serie_comprobante"],
-        datos["numero_comprobante"],
-        datos["fecha_compra"],
-        datos["valor_compra"],
-        datos["estado"],
-        datos["id_categoria"],
-        datos["numero_documento_proveedor"],
-        datos["id_sede"],
-        datos["id_area"],
-    )
+    @classmethod
+    def from_dict(cls,datos):
+        
+        activo = cls(
+            datos["codigo_patrimonial"],
+            datos["descripcion"],
+            datos["marca"],
+            datos["modelo"],
+            datos["serie"],
+            datos["tipo_comprobante"],
+            datos["serie_comprobante"],
+            datos["numero_comprobante"],
+            datos["fecha_compra"],
+            datos["valor_compra"],
+            datos["estado"],
+            datos["id_categoria"],
+            datos["numero_documento_proveedor"],
+            datos["id_sede"],
+            datos["id_area"],
+        )
 
-    activo.id_activo = datos["id_activo"]
-    
-    return activo
+        activo.id_activo = datos["id_activo"]
+        
+        return activo
