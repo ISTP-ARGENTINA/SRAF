@@ -136,3 +136,34 @@ class AreaDao:
         )
         
         return area
+    
+    def eliminar(self, id_area):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELEC id_area
+            FROM area
+            WHERE id_area = ?
+            """, id_area)
+        
+        if cursor.fetchone() is None:
+            conn.close()
+            
+            raise AreaNoEncontradaError(
+                id_area
+            )
+        cursor.execute("""
+            DELETE
+            FROM area
+            WHERE id_area = ?
+            """, id_area)
+        
+        conn.commit()
+        
+        conn.close()
+        
+        self.logger.warning(
+            f"Area eliminada ID={id_area}"
+        )
+        
