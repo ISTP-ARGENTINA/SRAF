@@ -161,4 +161,28 @@ class SedeDAO:
         conn = obtener_conexion()
         cursor = conn.cursor()
         
-        cursor.execute
+        cursor.execute("""
+            SELECT id_sede
+            FROM sede
+            WHERE id_sede=?
+            """, id_sede)
+        
+        if cursor.fetchone() is None:
+            conn.close()
+            
+            raise SedeNoEncontradaError(
+                id_sede
+            )
+        cursor.execute("""
+            DELETE
+            FROM sede
+            WHERE id_sede=?
+            """, id_sede)
+        
+        conn.commint()
+        conn.close()
+        
+        self.logger.warning(
+            
+            f"Sede eliminada ID={id_sede}"
+        )
