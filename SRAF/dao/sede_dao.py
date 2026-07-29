@@ -14,7 +14,7 @@ class SedeDAO:
         conn = obtener_conexion()
         #cursor permite ejecutar consultas
         cursor = conn.cursor()
-        
+        #verifica si existe la sede
         cursor.execute("""
             SELECT nombre
             FROM sede
@@ -31,7 +31,7 @@ class SedeDAO:
                 
                 sede.nombre
             )
-            
+        # procede con el registro de la sede
         cursor.execute("""
             INSERT INTO sede
             (
@@ -69,7 +69,7 @@ class SedeDAO:
         conn = obtener_conexion()
         
         cursor = conn.cursor()
-        
+        #obtiene todo los registros de sede
         cursor.execute("""
         
             SELECT
@@ -104,7 +104,7 @@ class SedeDAO:
     def actualizar(self, id_sede, nombre=None, direccion=None, ciudad=None):
         conn = obtener_conexion()
         cursor = conn.cursor()
-        
+        #busca la sede por id si existe
         cursor.execute("""
             SELECT *
             FROM sede
@@ -124,7 +124,7 @@ class SedeDAO:
         nuevo_nombre = nombre if nombre else fila.nombre
         nueva_direccion = direccion if direccion else fila.direccion
         nueva_ciudad = ciudad if ciudad else fila.ciudad
-        
+        #registra la sede
         cursor.execute("""
             UPDATE sede
             SET
@@ -160,7 +160,7 @@ class SedeDAO:
     def eliminar(self,id_sede):
         conn = obtener_conexion()
         cursor = conn.cursor()
-        
+        #busca la sede por id para eliminarla
         cursor.execute("""
             SELECT id_sede
             FROM sede
@@ -173,6 +173,7 @@ class SedeDAO:
             raise SedeNoEncontradaError(
                 id_sede
             )
+        #busca la sede por id para eliminarla
         cursor.execute("""
             DELETE
             FROM sede
