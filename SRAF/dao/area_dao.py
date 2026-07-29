@@ -23,3 +23,18 @@ class AreaDao:
             raise AreaDuplicidadError(
                 area.nombre
             )
+        #aqui inserta la nueva area
+        cursor.execute("""
+            INSERT INTO area
+            (
+                nombre,
+                descripcion
+            )
+            VALUES
+            (
+                ?,?
+            )
+            """,
+            area.mombre,
+            area.descripcion
+            )
