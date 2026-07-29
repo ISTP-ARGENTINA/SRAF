@@ -8,7 +8,7 @@ class AreaDao:
     def __init__(self):
         self.logger = logger()
         
-    def insertar(sefl, area):
+    def insertar(self, area):
         conn = obtener_conexion()
         cursor = conn.cursor()
         #ejecuta la consulta sql y valida si ahi duplicidad
@@ -38,3 +38,17 @@ class AreaDao:
             area.mombre,
             area.descripcion
             )
+        
+        conn.commit()
+        
+        cursor.execute("SELECT @@IDENTITY")
+        
+        area.id_area = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        self.logger.info(
+            f"Area registrada ID={area.id_area}"
+        )
+        
+        return area
