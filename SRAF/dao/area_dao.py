@@ -81,3 +81,58 @@ class AreaDao:
             conn.close()
             
             return areas
+        
+    def actualizar(self,id_area,nombre=None,descripcion=None):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT *
+            FROM area
+            WHERE id_area = ?
+            
+            """, id_area)
+        
+        fila = cursor.fetchone()
+        
+        if fila is None:
+            
+            conn.close()
+            
+            raise AreaNoEncontradaError(
+                id_area
+            )
+            
+        nuevo_nombre = nombre if nombre else fila.nombre
+        
+        nueva_descripcion = (
+            descripcion
+            if descripcion
+            else fila.descripcion
+        )
+        
+        cursor.execute("""
+            UPDATE area
+            SET
+                nombre = ?,
+                descripcion = ?
+            WHERE id_area = ?
+            """, nuevo_nombre, nueva_descripcion, id_area
+        )
+        
+        conn.commit
+        
+        conn.close()
+        
+        area = Area(
+            nuevo_nombre,
+            nueva_descripcion
+        )
+        
+        area.id_area = id_area
+        
+        self.looger.info(
+            f"Area actualizada ID={id_area}"
+        )
+        
+        return area
