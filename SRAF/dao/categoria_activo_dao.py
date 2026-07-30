@@ -54,4 +54,32 @@ class CategoriaActivioDAO:
         
         return categoria
     
+    def obtener_todos(self):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT
+                id_categoira,
+                nombre,
+                descripcion
+            FROM categoria_activo
+            ORDER BY nombre
+            
+            """)
+        categoria = []
+        
+        for fila in cursor.fetchall():
+            categoria = CategoriaActivo(
+                fila.nombre,
+                fila.descripcion
+            )
+            
+        categoria.id_categoria = fila.id_categoria
+        
+        categoria.append(categoria)
+        
+        conn.close()
+        
+        return categoria
     
