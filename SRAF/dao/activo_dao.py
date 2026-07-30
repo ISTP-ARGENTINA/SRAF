@@ -117,3 +117,134 @@ class ActivoDao:
             
             return activos
     
+    def actualizar(self,id_activo,codigo_patrimonial=None,descripcion=None,marca=None,modelo=None,serie=None,tipo_comprobante=None,serie_comprobante=None,numero_comprobante=None,fecha_compra=None,valor_compra=None,estado=None,id_categoria=None,numero_documento_proveedor=None,id_sede=None,id_area=None):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT *
+            FROM activo
+            WHERE id_activo = ?
+            """, id_activo)
+        
+        fila = cursor.fetchone()
+        
+        if fila is None:
+        
+            conn.close()
+            
+            raise ActivoNoencontradoError(id_activo)
+        
+        nuevo_codigo = codigo_patrimonial if codigo_patrimonial else fila.codigo_patrimonial
+        nueva_descripcion = descripcion if descripcion else fila.descripcion
+        nueva_marca = marca if marca else fila.marca
+        nuevo_modelo = modelo if modelo else fila.modelo
+        nueva_serie = serie if serie else fila.serie
+        nuevo_tipo = tipo_comprobante if tipo_comprobante else fila.tipo_comprobante
+        nueva_serie_comp = serie_comprobante if serie_comprobante else fila.serie_comprobante
+        nuevo_numero = numero_comprobante if numero_comprobante else fila.numero_comprobante
+        nueva_fecha = fecha_compra if fecha_compra else fila.fecha_compra
+        nuevo_valor = valor_compra if valor_compra else fila.valor_compra
+        nuevo_estado = estado if estado else fila.estado
+        nueva_categoria = id_categoria if id_categoria else fila.id_categoria
+        nuevo_proveedor = numero_documento_proveedor if numero_documento_proveedor else fila.numero_documento_proveedor
+        nueva_sede = id_sede if id_sede else fila.id_sede
+        nueva_area = id_area if id_area else fila.id_area
+        
+        cursor.execute("""
+            UPDATE activo
+            SET
+                codigo_patrimonial = ?,
+                descripcion = ?,
+                marca = ?,
+                modelo = ?,
+                serie = ?,
+                tipo_comprobante = ?,
+                serie_comprobante = ?,
+                numero_comprobante = ?,
+                fecha_compra = ?,
+                valor_compra = ?,
+                estado = ?,
+                id_categoria = ?,
+                numero_documento_proveedor = ?,
+                id_sede = ?,
+                id_area = ?
+            WHERE id_activo = ?
+            """,
+            nuevo_codigo,
+            nueva_descripcion,
+            nueva_marca,
+            nuevo_modelo,
+            nueva_serie,
+            nuevo_tipo,
+            nueva_serie_comp,
+            nuevo_numero,
+            nueva_fecha,
+            nuevo_valor,
+            nuevo_estado,
+            nueva_categoria,
+            nuevo_proveedor,
+            nueva_sede,
+            nueva_area,
+            id_activo
+            )
+        
+        conn.commit()
+        
+        conn.close()
+        
+        activo = Activo(
+            nuevo_codigo,
+            nueva_descripcion,
+            nueva_marca,
+            nuevo_modelo,
+            nueva_serie,
+            nuevo_tipo,
+            nueva_serie_comp,
+            nuevo_numero,
+            nueva_fecha,
+            nuevo_valor,
+            nuevo_estado,
+            nueva_categoria,
+            nuevo_proveedor,
+            nueva_sede,
+            nueva_area
+        )
+        
+        activo.id_activo = id_activo
+        
+        self.logger.info(
+            f"Activo actualizado ID={id_activo}"
+        )
+        
+        return activo
+    
+    def eliminar(self, id_activo):
+        conn = obtener_conexion
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id_activo
+            FROM activo
+            WHERE id_activo = ?
+        """, id_activo)
+        
+        if cursor.fetchone() is None:
+            conn.close()
+            
+            raise ActivoNoencontradoError(
+                id_activo
+            )
+        cursor.execute("""
+            DELETE
+            FROM activo
+            WHERE id_activo = ?
+            """, id_activo)
+        
+        conn.commit()
+        
+        conn.close()
+        
+        self.logger.warning(
+            f"Activo eliminado ID={id_activo}"
+        )
