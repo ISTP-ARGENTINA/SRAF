@@ -134,3 +134,28 @@ class CategoriaActivioDAO:
         )   
         
         return categoria
+    
+    def eliminar(self, id_categoria):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id_categoria
+            FROM categoria_activo
+            WHERE id_categoria = ?
+            """, id_categoria)
+        
+        if cursor.fetchone() is None:
+            conn.close()
+            
+            raise CategoriaNoEncontradaError(
+                id_categoria
+            )
+
+        conn.commit()
+            
+        conn.close()
+        
+        self.logger.warning(
+            f"Categoria eliminada ID={id_categoria}"
+        )
