@@ -1,0 +1,182 @@
+-- =============================================================================
+-- SCRIPT DE CREACIÓN DE BASE DE DATOS: SISTEMA DE REGISTRO DE ACTIVOS FIJOS
+-- MOTOR: PostgreSQL
+-- =============================================================================
+-- ENUMS (Tipos de datos personalizados para asegurar restricciones de negocio)
+CREATE TYPE estado_activo_enum AS ENUM ('OPERATIVO', 'EN_REPARACION', 'INACTIVO',
+'PRESTADO');
+CREATE TYPE estado_usuario_enum AS ENUM ('ACTIVO', 'INACTIVO', 'BLOQUEADO');
+CREATE TYPE estado_inventario_enum AS ENUM ('ABIERTO', 'EN_PROCESO', 'CERRADO');
+CREATE TYPE tipo_ajuste_enum AS ENUM ('INCREMENTO', 'DISMINUCION', 'CORRECCION');
+-- =============================================================================
+-- TABLAS MAESTRAS (No dependen de ninguna otra)
+-- =============================================================================
+-- TABLA: categoria_activo
+CREATE TABLE categoria_activo (
+id_categoria SERIAL PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+descripcion TEXT
+);
+-- TABLA: proveedor
+CREATE TABLE proveedor (
+numero_documento_proveedor VARCHAR(20) PRIMARY KEY,
+tipo_documento VARCHAR(25) NOT NULL,
+razon_social VARCHAR(150) NOT NULL,
+telefono VARCHAR(20),
+correo VARCHAR(100)
+);
+-- TABLA: sede
+CREATE TABLE sede (
+id_sede SERIAL PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+direccion VARCHAR(255) NOT NULL,
+ciudad VARCHAR(50) NOT NULL
+);
+-- TABLA: area
+CREATE TABLE area (
+id_area SERIAL PRIMARY KEY,
+nombre VARCHAR(100) NOT NULL,
+descripcion TEXT
+);
+-- TABLA: usuario
+CREATE TABLE usuario (
+id_usuario SERIAL PRIMARY KEY,
+nombres VARCHAR(100) NOT NULL,
+apellidos VARCHAR(100) NOT NULL,
+nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
+correo VARCHAR(100) NOT NULL UNIQUE,
+contraseña VARCHAR(255) NOT NULL,
+rol VARCHAR(30) NOT NULL,
+estado estado_usuario_enum NOT NULL DEFAULT 'ACTIVO',
+fecha_creacion TIMESTAMP NOT NULL DEFAULT NOW(),
+ultimo_acceso TIMESTAMP
+);
+-- TABLA: inventario_fisico (Cabecera macro)
+CREATE TABLE inventario_fisico (
+id_inventario SERIAL PRIMARY KEY,
+año INT NOT NULL CHECK (año >= 2020),
+fecha_inicio DATE NOT NULL DEFAULT CURRENT_DATE,
+fecha_fin DATE,
+estado estado_inventario_enum NOT NULL DEFAULT 'ABIERTO'
+);
+-- =============================================================================
+-- TABLA PRINCIPAL Y OPERACIONALES (Dependientes)
+-- =============================================================================
+-- TABLA: activo (Entidad Núcleo)
+CREATE TABLE activo (
+id_activo SERIAL PRIMARY KEY,
+codigo_patrimonial VARCHAR(50) NOT NULL UNIQUE,
+descripcion VARCHAR(255) NOT NULL,
+marca VARCHAR(50),
+modelo VARCHAR(50),
+serie VARCHAR(50) UNIQUE,
+tipo_comprobante VARCHAR(20) NOT NULL,
+serie_comprobante VARCHAR(20) NOT NULL,
+numero_comprobante VARCHAR(30) NOT NULL,
+fecha_compra DATE NOT NULL,
+valor_compra NUMERIC(12,2) NOT NULL CHECK (valor_compra >= 0.00),
+estado estado_activo_enum NOT NULL DEFAULT 'OPERATIVO',
+-- Relaciones (Claves Foráneas)
+id_categoria INT NOT NULL REFERENCES categoria_activo(id_categoria) ON DELETE
+RESTRICT ON UPDATE CASCADE,
+numero_documento_proveedor VARCHAR(20) NOT NULL REFERENCES
+proveedor(numero_documento_proveedor) ON DELETE RESTRICT ON UPDATE CASCADE,
+id_sede INT NOT NULL REFERENCES sede(id_sede) ON DELETE RESTRICT ON UPDATE
+CASCADE,
+id_area INT NOT NULL REFERENCES area(id_area) ON DELETE RESTRICT ON UPDATE
+CASCADE
+);
+-- TABLA: ajuste_activo (Historial de cambios técnicos/económicos)
+CREATE TABLE ajuste_activo (
+id_ajuste SERIAL PRIMARY KEY,
+fecha TIMESTAMP NOT NULL DEFAULT NOW(),
+tipo_ajuste tipo_ajuste_enum NOT NULL,
+valor_anterior VARCHAR(100) NOT NULL,
+valor_nuevo VARCHAR(100) NOT NULL,
+observacion TEXT NOT NULL,
+-- Relaciones
+id_activo INT NOT NULL REFERENCES activo(id_activo) ON DELETE CASCADE ON
+UPDATE CASCADE,
+id_usuario INT NOT NULL REFERENCES usuario(id_usuario) ON DELETE RESTRICT ON
+UPDATE CASCADE
+);
+-- TABLA: baja_activo (Expediente de salida definitiva)
+CREATE TABLE baja_activo (
+id_baja SERIAL PRIMARY KEY,
+fecha_baja DATE NOT NULL DEFAULT CURRENT_DATE,
+motivo VARCHAR(50) NOT NULL,
+descripcion TEXT NOT NULL,
+-- Relaciones
+id_activo INT NOT NULL UNIQUE REFERENCES activo(id_activo) ON DELETE CASCADE
+ON UPDATE CASCADE,
+id_usuario INT NOT NULL REFERENCES usuario(id_usuario) ON DELETE RESTRICT ON
+UPDATE CASCADE
+);
+-- =============================================================================
+-- TABLA DE DETALLE INTERMEDIA (Relación Muchos a Muchos N:M)
+-- =============================================================================
+-- TABLA INTERMEDIA: detalle_inventario
+CREATE TABLE detalle_inventario (
+id_detalle SERIAL PRIMARY KEY,
+id_inventario INT NOT NULL REFERENCES inventario_fisico(id_inventario) ON
+DELETE CASCADE ON UPDATE CASCADE,
+id_activo INT NOT NULL REFERENCES activo(id_activo) ON DELETE RESTRICT ON
+UPDATE CASCADE,
+encontrado BOOLEAN NOT NULL DEFAULT TRUE,
+observacion TEXT,
+-- Evita que se escanee el mismo activo más de una vez en una misma campaña
+de inventario
+CONSTRAINT uq_inventario_activo UNIQUE (id_inventario, id_activo)
+);
+-- =============================================================================
+-- ÍNDICES DE RENDIMIENTO (Optimización para búsquedas y cruces rápidos)
+-- =============================================================================
+CREATE INDEX idx_activo_codigo_pat ON activo(codigo_patrimonial);
+CREATE INDEX idx_activo_estado ON activo(estado);
+CREATE INDEX idx_activo_categoria ON activo(id_categoria);
+CREATE INDEX idx_activo_area ON activo(id_area);
+CREATE INDEX idx_ajuste_activo ON ajuste_activo(id_activo);
+CREATE INDEX idx_baja_activo ON baja_activo(id_activo);
+CREATE INDEX idx_detalle_inventario ON detalle_inventario(id_inventario);
+CREATE INDEX idx_detalle_activo ON detalle_inventario(id_activo);
+-- =============================================================================
+-- DATOS DE PRUEBA (Para validar el funcionamiento inicial)
+-- =============================================================================
+INSERT INTO categoria_activo (nombre, descripcion) VALUES
+('Equipos de Cómputo', 'Laptops, servidores, monitores y periféricos'),
+('Mobiliario de Oficina', 'Escritorios, sillas ergonómicas, estantes'),
+('Vehículos', 'Unidades móviles de transporte logístico y operativo');
+INSERT INTO proveedor (numero_documento_proveedor, tipo_documento, razon_social,
+telefono, correo) VALUES
+('20555444331', 'RUC', 'Tecnología Global S.A.C.', '987654321',
+'ventas@tecglobal.pe'),
+('20111222334', 'RUC', 'Muebles Industriales EIRL', '912345678',
+'contacto@mueblesind.com');
+INSERT INTO sede (nombre, direccion, city) VALUES
+('Sede Central', 'Av. Las Flores 456', 'Lima'),
+('Almacén Norte', 'Calle Los Álamos 102', 'Piura');
+INSERT INTO area (nombre, descripcion) VALUES
+('Tecnologías de Información', 'Soporte, desarrollo e infraestructura
+tecnológica'),
+('Contabilidad y Finanzas', 'Gestión económica, tesorería y auditorías');
+-- Password de ejemplo plano: 'admin123'
+INSERT INTO usuario (nombres, apellidos, nombre_usuario, correo, contraseña, rol)
+VALUES
+('Juan', 'Pérez', 'jperez_admin', 'jperez@empresa.com', '$2b$10$OEk.X8g1hM0...',
+'ADMINISTRADOR'),
+('Ana', 'Gómez', 'agomez_patrimonio', 'agomez@empresa.com', '$2b$10$f6fKjR8z...',
+'ADMINISTRADOR_ACTIVOS');
+INSERT INTO activo (codigo_patrimonial, descripcion, marca, modelo, serie,
+tipo_comprobante, serie_comprobante, numero_comprobante, fecha_compra,
+valor_compra, id_categoria, numero_documento_proveedor, id_sede, id_area) VALUES
+('PAT-2026-0001', 'Laptop ThinkPad L14', 'Lenovo', 'L14 Gen 4', 'PF-3XYZ12',
+'Factura', 'E001', '0004512', '2026-01-15', 3500.00, 1, '20555444331', 1, 1),
+('PAT-2026-0002', 'Silla Ergonómica Pro', 'Mesh', 'Ergo-X', 'SN-MESH-992',
+'Factura', 'F002', '0008951', '2026-02-20', 650.00, 2, '20111222334', 1, 2);
+INSERT INTO inventario_fisico (año, estado) VALUES
+(2026, 'ABIERTO');
+-- Registramos el escaneo del primer activo en la campaña de inventario abierta
+INSERT INTO detalle_inventario (id_inventario, id_activo, encontrado,
+observacion) VALUES
+(1, 1, TRUE, 'Equipo verificado en posesión del Desarrollador Senior. En óptimo
+estado.');
