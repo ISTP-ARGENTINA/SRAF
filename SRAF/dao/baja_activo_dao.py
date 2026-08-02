@@ -91,3 +91,37 @@ class BajaActivoDAO:
         conn.close()
         
         return bajas
+    
+    def eliminar(self, id_baja):
+        
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.excecute("""
+            SELECT id_baja
+            FROM baja_activo
+            WHERE id_baja = ?
+        """,
+        id_baja)
+        
+        if cursor.fetchall() is None:
+            conn.close()
+            
+            raise BajaNoEncontradaError(
+                id_baja
+            )
+        
+        cursor.excecute("""
+            DELETE
+            FROM baja_activo
+            WHERE id_baja = ?
+        """,
+        id_baja)
+        
+        conn.commit()
+        
+        conn.close()
+        
+        self.logger.warning(
+            f"Baja eliminada ID={id_baja}"
+        )
