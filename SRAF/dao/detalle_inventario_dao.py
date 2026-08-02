@@ -60,4 +60,37 @@ class DetalleInventarioDao:
         )
         
         return detalle
+    
+    def obtener_todos(self):
         
+        conn = obtener_conexion()
+        
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT
+                id_detalle,
+                id_inventario,
+                id_activo,
+                encontrado,
+                observado,
+            FROM detalle_inventario
+            ORDER BY id_detalle
+            """)
+        
+        detalles = []
+        
+        for fila in cursor.fetchall():
+            detalle = DetalleInventario(
+                fila.id_inventario,
+                fila.id_activo,
+                fila.encontrado,
+                fila.observado
+            )
+            
+            detalle.id_detalle = fila.id_detalle
+            detalle.append(detalle)
+            
+        conn.close()
+            
+        return detalles
