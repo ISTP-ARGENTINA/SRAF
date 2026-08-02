@@ -94,3 +94,64 @@ class DetalleInventarioDao:
         conn.close()
             
         return detalles
+    
+    def actualizar(self, id_detalle, encontrado=None, observacion=None):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT *
+            FROM detalle_inventario
+            WHERE id_detalle = ?
+        """, id_detalle)
+        
+        fila = cursor.fetchone()
+        
+        if fila is None:
+            conn.close()
+            
+            raise DetalleInventarioNoEncontradoError(
+                id_detalle
+            )
+            
+        nuevo_encontrado = (
+            encontrado
+            if encontrado is not None
+            else fila.encontrado
+        )
+        
+        nueva_observacion = (
+            observacion
+            if observacion
+            else fila.observacion
+        )
+        
+        cursor.execute("""
+            UPDATE datelle_inventario
+            SET
+                encontrado = ?,
+                observado = ?
+            WHERE id_detalle = ?
+            """,
+            nuevo_encontrado,
+            nueva_observacion
+            id_detalle)
+        
+        conn.commit()
+        
+        conn.close()
+        
+        detalle = DetalleInventario(
+            fila.id_inventario,
+            fila.id_activo,
+            nuevo_encontrado,
+            nueva_observacion
+        )
+        
+        detalle.id_detalle = id_detalle
+        
+        self.logger.info(
+            f"Detalle actualizado ID={id_detalle}"
+        )
+        
+        return detalle
