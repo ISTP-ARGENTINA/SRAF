@@ -57,5 +57,15 @@ class BajaActivoDAO:
         )
         
         return baja
-            
+        
+    def obtener_todos(self):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.excecute("""
+            SELECT
+                id_baja,
+                fecha_baja,
+                
+            """)
         
