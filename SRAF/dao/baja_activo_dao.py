@@ -87,5 +87,7 @@ class BajaActivoDAO:
             baja.id_baja = fila.id_baja
             baja.fecha_baja = fila.fecha_baja
             bajas.append(baja)
+        
         conn.close()
+        
         return bajas
