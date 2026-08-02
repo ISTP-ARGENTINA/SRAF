@@ -14,7 +14,7 @@ class ActivoDao:
         cursor.execute("""
             SELECT codigo_patrimonial
             FROM activo
-            WHERE codigo_patrimonial = ?
+            WHERE codigo_patrimonial = %s
             """, activo.codigo_patrimonial)
         
         if cursor.fetchone():
@@ -42,16 +42,17 @@ class ActivoDao:
                 id_area
             )
             VALUES(
-                ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
             )
+            RETURNING id_activo
             """,
-            activo.codigo_patrimonial,activo.descripcion,activo.marca,activo.modelo,activo.serie,activo.tipo_comprobante,activo.serie_comprobante,activo.numero_comprobante,activo.fecha_comprobante,activo.valor_compra,activo.estado,activo.id_categoria,activo.numero_documento_proveedor,activo.id_sede,activo.id_area)
+            activo.codigo_patrimonial,activo.descripcion,activo.marca,activo.modelo,activo.serie,activo.tipo_comprobante,activo.serie_comprobante,activo.numero_comprobante,activo.fecha_comprobante,activo.fecha_compra,         activo.valor_compra,activo.estado,activo.id_categoria,activo.numero_documento_proveedor,activo.id_sede,activo.id_area)
         
         conn.commit()
         
         cursor.execute("SELECT @@ITDENTITY")
         
-        activo.id_activo = cursor.fetchone()[0]
+        activo.id_activo = cursor.fetchone()["id_activo"]
         
         conn.close()
         
@@ -92,24 +93,24 @@ class ActivoDao:
             
         for fila in cursor.fetchall():
             activo = Activo(
-                fila.codigo_patrimonial,
-                fila.descripcion,
-                fila.marca,
-                fila.modelo,
-                fila.serie,
-                fila.tipo_comprobante,
-                fila.serie_comprobante,
-                fila.numero_comprobante,
-                fila.fecha_compra,
-                fila.valor_compra,
-                fila.estado,
-                fila.id_categoria,
-                fila.numero_documento_proveedor,
-                fila.id_sede,
-                fila.id_area
+                fila["codigo_patrimonial"],
+                fila["descripcion"],
+                fila["marca"],
+                fila["modelo"],
+                fila["serie"],
+                fila["tipo_comprobante"],
+                fila["serie_comprobante"],
+                fila["numero_comprobante"],
+                fila["fecha_compra"],
+                fila["valor_compra"],
+                fila["estado"],
+                fila["id_categoria"],
+                fila["numero_documento_proveedor"],
+                fila["id_sede"],
+                fila["id_area"]
             )
             
-            activo.id_activo = fila.id_activo
+            activo.id_activo = fila["id_activo"]
             
             activos.append(activo)
             
@@ -124,8 +125,8 @@ class ActivoDao:
         cursor.execute("""
             SELECT *
             FROM activo
-            WHERE id_activo = ?
-            """, id_activo)
+            WHERE id_activo = %s
+            """,(id_activo,))
         
         fila = cursor.fetchone()
         
@@ -134,60 +135,46 @@ class ActivoDao:
             conn.close()
             
             raise ActivoNoencontradoError(id_activo)
-        
-        nuevo_codigo = codigo_patrimonial if codigo_patrimonial else fila.codigo_patrimonial
-        nueva_descripcion = descripcion if descripcion else fila.descripcion
-        nueva_marca = marca if marca else fila.marca
-        nuevo_modelo = modelo if modelo else fila.modelo
-        nueva_serie = serie if serie else fila.serie
-        nuevo_tipo = tipo_comprobante if tipo_comprobante else fila.tipo_comprobante
-        nueva_serie_comp = serie_comprobante if serie_comprobante else fila.serie_comprobante
-        nuevo_numero = numero_comprobante if numero_comprobante else fila.numero_comprobante
-        nueva_fecha = fecha_compra if fecha_compra else fila.fecha_compra
-        nuevo_valor = valor_compra if valor_compra else fila.valor_compra
-        nuevo_estado = estado if estado else fila.estado
-        nueva_categoria = id_categoria if id_categoria else fila.id_categoria
-        nuevo_proveedor = numero_documento_proveedor if numero_documento_proveedor else fila.numero_documento_proveedor
-        nueva_sede = id_sede if id_sede else fila.id_sede
-        nueva_area = id_area if id_area else fila.id_area
+        nuevo_codigo = codigo_patrimonial if codigo_patrimonial else fila["codigo_patrimonial"]
+        nueva_descripcion = descripcion if descripcion else fila["descripcion"]
+        nueva_marca = marca if marca else fila["marca"]
+        nuevo_modelo = modelo if modelo else fila["modelo"]
+        nueva_serie = serie if serie else fila["serie"]
+        nuevo_tipo = tipo_comprobante if tipo_comprobante else fila["tipo_comprobante"]
+        nueva_serie_comp = serie_comprobante if serie_comprobante else fila["serie_comprobante"]
+        nuevo_numero = numero_comprobante if numero_comprobante else fila["numero_comprobante"]
+        nueva_fecha = fecha_compra if fecha_compra else fila["fecha_compra"]
+        nuevo_valor = valor_compra if valor_compra else fila["valor_compra"]
+        nuevo_estado = estado if estado else fila["estado"]
+        nueva_categoria = id_categoria if id_categoria else fila["id_categoria"]
+        nuevo_proveedor = numero_documento_proveedor if numero_documento_proveedor else fila["numero_documento_proveedor"]
+        nueva_sede = id_sede if id_sede else fila["id_sede"]
+        nueva_area = id_area if id_area else fila["id_area"]
         
         cursor.execute("""
             UPDATE activo
             SET
-                codigo_patrimonial = ?,
-                descripcion = ?,
-                marca = ?,
-                modelo = ?,
-                serie = ?,
-                tipo_comprobante = ?,
-                serie_comprobante = ?,
-                numero_comprobante = ?,
-                fecha_compra = ?,
-                valor_compra = ?,
-                estado = ?,
-                id_categoria = ?,
-                numero_documento_proveedor = ?,
-                id_sede = ?,
-                id_area = ?
-            WHERE id_activo = ?
+                codigo_patrimonial = %s,
+                descripcion = %s,
+                marca = %s,
+                modelo = %s,
+                serie = %s,
+                tipo_comprobante = %s,
+                serie_comprobante = %s,
+                numero_comprobante = %s,
+                fecha_compra = %s,
+                valor_compra = %s,
+                estado = %s,
+                id_categoria = %s,
+                numero_documento_proveedor = %s,
+                id_sede = %s,
+                id_area = %s
+            WHERE id_activo = %s
             """,
-            nuevo_codigo,
-            nueva_descripcion,
-            nueva_marca,
-            nuevo_modelo,
-            nueva_serie,
-            nuevo_tipo,
-            nueva_serie_comp,
-            nuevo_numero,
-            nueva_fecha,
-            nuevo_valor,
-            nuevo_estado,
-            nueva_categoria,
-            nuevo_proveedor,
-            nueva_sede,
-            nueva_area,
+            (
+            nuevo_codigo,nueva_descripcion,nueva_marca,    nuevo_modelo,nueva_serie,nuevo_tipo,nueva_serie_comp,nuevo_numero,nueva_fecha,nuevo_valor,nuevo_estado,nueva_categoria,nuevo_proveedor,nueva_sede,nueva_area,
             id_activo
-            )
+            ))
         
         conn.commit()
         
@@ -220,14 +207,14 @@ class ActivoDao:
         return activo
     
     def eliminar(self, id_activo):
-        conn = obtener_conexion
+        conn = obtener_conexion()
         cursor = conn.cursor()
         
         cursor.execute("""
             SELECT id_activo
             FROM activo
-            WHERE id_activo = ?
-        """, id_activo)
+            WHERE id_activo = %s
+        """, (id_activo,))
         
         if cursor.fetchone() is None:
             conn.close()
@@ -238,8 +225,8 @@ class ActivoDao:
         cursor.execute("""
             DELETE
             FROM activo
-            WHERE id_activo = ?
-            """, id_activo)
+            WHERE id_activo = %s
+            """, (id_activo,))
         
         conn.commit()
         
