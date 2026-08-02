@@ -10,13 +10,13 @@ class logger:
             
             cls._instancia = super().__new__(cls)
             
-            cls._instancia._log = []
+            cls._instancia._logs = []
             
         return cls._instancia
     
     def _registrar(self, nivel, mensaje):
         
-        hora = datetime.datetime.now().strftime("%d/%m/%/y %H:%M:%S")
+        hora = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         
         entrada = {
             
@@ -55,6 +55,6 @@ class logger:
     
     def limpiar(self):
         
-        self._long.clear()
+        self._logs.clear()
         
         print("\nHistorial eliminado correctamente.")
