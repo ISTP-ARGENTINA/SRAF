@@ -132,10 +132,10 @@ class DetalleInventarioDao:
                 encontrado = ?,
                 observado = ?
             WHERE id_detalle = ?
-            """,
-            nuevo_encontrado,
-            nueva_observacion
-            id_detalle)
+        """,
+        nuevo_encontrado,
+        nueva_observacion,
+        id_detalle)
         
         conn.commit()
         
