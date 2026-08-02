@@ -155,3 +155,34 @@ class DetalleInventarioDao:
         )
         
         return detalle
+    
+    def eliminar(self, id_detalle):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id_detalle
+            FROM detalle_inventario
+            WHERE id_detalle = ?
+            """, id_detalle)
+        
+        if cursor.fetchone() is None:
+            conn.close()
+            
+            raise DetalleInventarioNoEncontradoError(
+                id_detalle
+            )
+        
+        cursor.execute("""
+            DELETE
+            FROM detalle_inventario
+            WHERE id_detalle = ?
+            """, id_detalle)
+        
+        conn.commit()
+        
+        conn.close()
+        
+        self.logger.warning(
+            f"Detalle eliminado ID={id_detalle}"
+        )
