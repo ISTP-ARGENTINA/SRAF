@@ -20,7 +20,7 @@ class InventarioFisicoDAO:
             (
                 ?
             )
-            """, inventario.anio)
+        """, inventario.anio)
         conn.commit()
         
         cursor.execute("SELECT @@IDENTITY")
@@ -50,7 +50,7 @@ class InventarioFisicoDAO:
                 estado
             FROM inventario_fisico
             ORDER BY anio DESC
-            """)
+        """)
         
         inventarios = []
         
@@ -79,7 +79,7 @@ class InventarioFisicoDAO:
             SELECT *
             FROM inventario_fisico
             WHERE id_inventario = ?
-            """, id_inventario)
+        """, id_inventario)
         
         fila = cursor.fetchone()
         
@@ -103,12 +103,12 @@ class InventarioFisicoDAO:
                 fecha_fin = ?,
                 estado = ?
             WHERE id_inventario = ?
-            """,
+        """,
             
-            nuevo_anio,
-            nueva_fecha_fin,
-            nuevo_estado,
-            id_inventario)
+        nuevo_anio,
+        nueva_fecha_fin,
+        nuevo_estado,
+        id_inventario)
         
         conn.commit()
             
@@ -138,7 +138,7 @@ class InventarioFisicoDAO:
             SELECT id_inventario
             FROM inventario_fisico
             WHERE id_inventario = ?
-            """, id_inventario)
+        """, id_inventario)
         
         if cursor.fectone() is None:
             
@@ -152,7 +152,7 @@ class InventarioFisicoDAO:
             DELETE
             FROM inventario_fisico
             WHERE id_inventario = ?
-            """, id_inventario)
+        """, id_inventario)
         
         conn.commit()
         

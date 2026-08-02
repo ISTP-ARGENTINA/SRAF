@@ -16,7 +16,7 @@ class AreaDao:
             SELECT nombre
             FROM area
             WHERE nombre = ?            
-            """, area.nombre)
+        """, area.nombre)
         if cursor.fetchone():
             conn.close()
             
@@ -34,10 +34,10 @@ class AreaDao:
             (
                 ?,?
             )
-            """,
-            area.mombre,
-            area.descripcion
-            )
+        """,
+        area.mombre,
+        area.descripcion
+        )
         
         conn.commit()
         
@@ -64,7 +64,7 @@ class AreaDao:
                 descripcion
             FROM area
             ORDER BYE nombre
-            """)
+        """)
         
         areas = []
         
@@ -91,7 +91,7 @@ class AreaDao:
             FROM area
             WHERE id_area = ?
             
-            """, id_area)
+        """, id_area)
         
         fila = cursor.fetchone()
         
@@ -117,8 +117,7 @@ class AreaDao:
                 nombre = ?,
                 descripcion = ?
             WHERE id_area = ?
-            """, nuevo_nombre, nueva_descripcion, id_area
-        )
+        """, nuevo_nombre, nueva_descripcion, id_area)
         
         conn.commit
         
@@ -145,7 +144,7 @@ class AreaDao:
             SELEC id_area
             FROM area
             WHERE id_area = ?
-            """, id_area)
+        """, id_area)
         
         if cursor.fetchone() is None:
             conn.close()
@@ -157,7 +156,7 @@ class AreaDao:
             DELETE
             FROM area
             WHERE id_area = ?
-            """, id_area)
+        """, id_area)
         
         conn.commit()
         

@@ -37,7 +37,7 @@ class CategoriaActivioDAO:
             (
                 ?,?
             )
-            """, categoria.nombre, categoria.descripcion)
+        """, categoria.nombre, categoria.descripcion)
         
         conn.commit()
         
@@ -66,7 +66,7 @@ class CategoriaActivioDAO:
             FROM categoria_activo
             ORDER BY nombre
             
-            """)
+        """)
         categoria = []
         
         for fila in cursor.fetchall():
@@ -117,8 +117,7 @@ class CategoriaActivioDAO:
                 descripcion = ?
             WHERE id_categoria = ?
             
-            """,nuevo_nombre,nueva_descripcion,id_categoria
-            )
+        """,nuevo_nombre,nueva_descripcion,id_categoria)
         
         conn.commit()
         
@@ -143,7 +142,7 @@ class CategoriaActivioDAO:
             SELECT id_categoria
             FROM categoria_activo
             WHERE id_categoria = ?
-            """, id_categoria)
+        """, id_categoria)
         
         if cursor.fetchone() is None:
             conn.close()

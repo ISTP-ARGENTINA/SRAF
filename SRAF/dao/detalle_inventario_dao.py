@@ -41,11 +41,11 @@ class DetalleInventarioDao:
             (
                 ?,?,?,?
             )
-            """,
-            detalle.id_inventario,
-            detalle.id_activo,
-            detalle.encontrado,
-            detalle.observacion)
+        """,
+        detalle.id_inventario,
+        detalle.id_activo,
+        detalle.encontrado,
+        detalle.observacion)
         
         conn.commit()
         
@@ -76,7 +76,7 @@ class DetalleInventarioDao:
                 observado,
             FROM detalle_inventario
             ORDER BY id_detalle
-            """)
+        """)
         
         detalles = []
         
@@ -164,7 +164,7 @@ class DetalleInventarioDao:
             SELECT id_detalle
             FROM detalle_inventario
             WHERE id_detalle = ?
-            """, id_detalle)
+        """, id_detalle)
         
         if cursor.fetchone() is None:
             conn.close()
@@ -177,7 +177,7 @@ class DetalleInventarioDao:
             DELETE
             FROM detalle_inventario
             WHERE id_detalle = ?
-            """, id_detalle)
+        """, id_detalle)
         
         conn.commit()
         

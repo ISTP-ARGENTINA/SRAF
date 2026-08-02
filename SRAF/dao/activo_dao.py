@@ -45,8 +45,8 @@ class ActivoDao:
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
             )
             RETURNING id_activo
-            """,
-            activo.codigo_patrimonial,activo.descripcion,activo.marca,activo.modelo,activo.serie,activo.tipo_comprobante,activo.serie_comprobante,activo.numero_comprobante,activo.fecha_comprobante,activo.fecha_compra,         activo.valor_compra,activo.estado,activo.id_categoria,activo.numero_documento_proveedor,activo.id_sede,activo.id_area)
+        """,
+        activo.codigo_patrimonial,activo.descripcion,activo.marca,activo.modelo,activo.serie,activo.tipo_comprobante,activo.serie_comprobante,activo.numero_comprobante,activo.fecha_comprobante,activo.fecha_compra,         activo.valor_compra,activo.estado,activo.id_categoria,activo.numero_documento_proveedor,activo.id_sede,activo.id_area)
         
         conn.commit()
         
@@ -87,7 +87,7 @@ class ActivoDao:
             
             ORDER BY codigo_patrimonial
                 
-            """)
+        """)
         
         activos = []
             
@@ -126,7 +126,7 @@ class ActivoDao:
             SELECT *
             FROM activo
             WHERE id_activo = %s
-            """,(id_activo,))
+        """,(id_activo,))
         
         fila = cursor.fetchone()
         
@@ -170,11 +170,11 @@ class ActivoDao:
                 id_sede = %s,
                 id_area = %s
             WHERE id_activo = %s
-            """,
-            (
-            nuevo_codigo,nueva_descripcion,nueva_marca,    nuevo_modelo,nueva_serie,nuevo_tipo,nueva_serie_comp,nuevo_numero,nueva_fecha,nuevo_valor,nuevo_estado,nueva_categoria,nuevo_proveedor,nueva_sede,nueva_area,
-            id_activo
-            ))
+        """,
+        (
+        nuevo_codigo,nueva_descripcion,nueva_marca,    nuevo_modelo,nueva_serie,nuevo_tipo,nueva_serie_comp,nuevo_numero,nueva_fecha,nuevo_valor,nuevo_estado,nueva_categoria,nuevo_proveedor,nueva_sede,nueva_area,
+        id_activo
+        ))
         
         conn.commit()
         
@@ -226,7 +226,7 @@ class ActivoDao:
             DELETE
             FROM activo
             WHERE id_activo = %s
-            """, (id_activo,))
+        """, (id_activo,))
         
         conn.commit()
         

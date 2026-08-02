@@ -20,7 +20,7 @@ class SedeDAO:
             FROM sede
             WHERE nombre = ?
 
-            """, sede.nombre
+        """, sede.nombre
         )
         
         if cursor.fetchone():
@@ -43,12 +43,12 @@ class SedeDAO:
             (
                 ?,?,?
             )
-            """,
+        """,
             
-            sede.nombre,
-            sede.direccion,
-            sede.ciudad
-            )
+        sede.nombre,
+        sede.direccion,
+        sede.ciudad
+        )
         
         conn.commit()
         
@@ -165,7 +165,7 @@ class SedeDAO:
             SELECT id_sede
             FROM sede
             WHERE id_sede=?
-            """, id_sede)
+        """, id_sede)
         
         if cursor.fetchone() is None:
             conn.close()
@@ -178,7 +178,7 @@ class SedeDAO:
             DELETE
             FROM sede
             WHERE id_sede=?
-            """, id_sede)
+        """, id_sede)
         
         conn.commint()
         conn.close()
