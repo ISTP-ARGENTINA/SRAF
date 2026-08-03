@@ -16,9 +16,13 @@ class Activo():
         self.numero_documento_proveedor = numero_documento_proveedor
         self.id_sede                    = id_sede
         self.id_area                    = id_area
-        
+
+    def cambiar_estado(self, nuevo_estado):
+        self.estado = nuevo_estado
+
     def __str__(self):
-        return f"[{self.id_activo}] {self.codigo_patrimonial} {self.descripcion} {self.marca} {self.modelo} {self.serie} {self.tipo_comprobante} {self.serie_comprobante} {self.numero_comprobante} {self.fecha_compra} {self.valor_compra} {self.estado} {self.id_categoria} {self.numero_documento_proveedor} {self.id_sede} {self.id_area}"
+        return (f"[{self.id_activo}] {self.codigo_patrimonial} {self.descripcion} | "
+                f"{self.marca or '-'} {self.modelo or '-'} | S/.{self.valor_compra:.2f} | {self.estado}")
     
     def to_dict(self):
         return{

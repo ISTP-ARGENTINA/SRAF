@@ -10,7 +10,6 @@ class AjusteActivoDAO:
     def insertar(self, ajuste):
         conn = obtener_conexion
         cursor = conn.cursor()
-        
         cursor.execute("""
             
             INSERT INTO ajuste_activo
