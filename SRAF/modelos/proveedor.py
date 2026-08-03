@@ -1,5 +1,6 @@
 class Proveedor():
-    def __init__(self,numero_documento_proveedor, tipo_documento, razon_social, telefono ,correo ):
+# PK natural: numero_documento_proveedor (no autoincremental)
+    def __init__(self,numero_documento_proveedor, tipo_documento, razon_social, telefono=None ,correo=None ):
         self.numero_documento_proveedor     = numero_documento_proveedor
         self.tipo_documento                 = tipo_documento
         self.razon_social                   = razon_social
@@ -7,7 +8,7 @@ class Proveedor():
         self.correo                         = correo
         
     def __str__(self):
-            return f"[{self.numero_documento_proveedor}] {self.tipo_documento} {self.razon_social} {self.telefono} {self.correo}"
+            return f"[{self.numero_documento_proveedor}] {self.tipo_documento} | {self.razon_social} | {self.telefono} | {self.correo}"
         
     def to_dict(self):
         return{

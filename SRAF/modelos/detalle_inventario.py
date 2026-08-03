@@ -1,5 +1,5 @@
 class DetalleInventario:
-    def __init__(self, id_inventario, id_activo, encontrado, observacion):
+    def __init__(self, id_inventario, id_activo, encontrado = True, observacion= None):
         self.id_detalle         = None
         self.id_inventario      = id_inventario
         self.id_activo          = id_activo
@@ -7,7 +7,7 @@ class DetalleInventario:
         self.observacion        = observacion
         
     def __str__(self):
-        return f"[{self.id_detalle}] {self.id_inventario} {self.id_activo} {self.encontrado} {self.observacion}"
+        return f"[{self.id_detalle}] | Inventario:{self.id_inventario}Activo:{self.id_activo} |Encontrado:{self.encontrado} {self.observacion}"
             
     def to_dict(self):
         return{
@@ -25,10 +25,7 @@ class DetalleInventario:
             datos["id_inventario"],
             datos["id_activo"],
             datos["encontrado"],
-            datos["observacion"]
-        )
-        
+            datos["observacion"])
         detalle.id_detalle = datos["id_detalle"]
-        
         return detalle
         

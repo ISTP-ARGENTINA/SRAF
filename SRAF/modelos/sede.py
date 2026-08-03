@@ -6,7 +6,7 @@ class Sede():
         self.ciudad       = ciudad
     
     def __str__(self):
-        return f"[{self.id_sede}] {self.nombre} {self.direccion} {self.ciudad}"
+        return f"[{self.id_sede}] {self.nombre} | {self.direccion} | {self.ciudad}"
     
     def to_dict(self):
         
@@ -26,6 +26,6 @@ class Sede():
             datos["ciudad"]
         )
         
-        sede.id = datos["id_sede"]
+        sede.id_sede = datos["id_sede"]
         
         return sede
