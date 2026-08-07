@@ -1,3 +1,4 @@
+import psycopg2
 from config.base_datos import obtener_conexion
 from config.logger import logger
 from config.sistema_config import (SedeDuplicadaError, SedeNoEncontradaError)
@@ -10,27 +11,15 @@ class SedeDAO:
         self.logger = logger()
         
     def insertar(self, sede):
+        if self.buscar_por_nombre(sede.nombre):
         #abre conexion sql
+            self._log.warning(f"sede duplicada: {sede.nombre}")
+            raise SedeDuplicadaError(sede.nombre)
+
         conn = obtener_conexion()
         #cursor permite ejecutar consultas
         cursor = conn.cursor()
         #verifica si existe la sede
-        cursor.execute("""
-            SELECT nombre
-            FROM sede
-            WHERE nombre = ?
-
-        """, sede.nombre
-        )
-        
-        if cursor.fetchone():
-            
-            conn.close()
-            
-            raise SedeDuplicadaError(
-                
-                sede.nombre
-            )
         # procede con el registro de la sede
         cursor.execute("""
             INSERT INTO sede
@@ -39,22 +28,16 @@ class SedeDAO:
                 direccion,
                 ciudad
             )
-            VALUES
-            (
-                ?,?,?
-            )
-        """,
+            VALUES (%s, %s, %s) RETURNING id_sede""",
             
-        sede.nombre,
-        sede.direccion,
-        sede.ciudad
+        (sede.nombre,sede.direccion,sede.ciudad)
         )
         
         conn.commit()
         
-        cursor.execute("SELECT @@IDENTITY")
+        cursor.close()
         
-        sede.id_sede = cursor.fetchone()[0]
+        sede.id_sede = cursor.fetchone()["id_sede"]
         
         conn.close()
         

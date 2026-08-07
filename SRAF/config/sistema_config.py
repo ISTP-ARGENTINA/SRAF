@@ -20,6 +20,10 @@ class SistemaConfig:
                 f"Autor: {cls._inst.autor}"
             )
         return cls._inst
+# config/sistema_config.py
+# PATRON SINGLETON #2 - SistemaConfig
+# Centraliza la configuracion del sistema. Todos los modulos leen los
+# mismos datos (nombre, version, empresa) sin pasarlos como parametros.
 
 class ActivoNoencontradoError(Exception):
     def __init__(self, id_activo):
