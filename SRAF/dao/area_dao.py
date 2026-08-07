@@ -1,3 +1,4 @@
+import psycopg2
 from config.base_datos import obtener_conexion
 from config.logger import logger
 from config.sistema_config import (AreaDuplicidadError, AreaNoEncontradaError)
