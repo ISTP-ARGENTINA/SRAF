@@ -44,7 +44,7 @@ class CategoriaActivoActualizar(BaseModel):
             return valor
         valor = valor.strip()
         if not valor:
-            
+            raise ValueError("El nombre no puede estar vacio")
         if len(valor) < 3:
             raise ValueError("El nombre debe tener al menos 3 caracteres")
         return valor.title()
