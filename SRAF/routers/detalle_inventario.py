@@ -4,7 +4,7 @@ from dao.detalle_inventario_dao import DetalleInventarioDAO
 from dao.inventario_fisico_dao import InventarioFisicoDAO
 from dao.activo_dao import ActivoDAO
 from dao.categoria_activo_dao import CategoriaActivoDAO
-from dao.proveedor_dao import ProveedorDAO
+from dao.prooveedor_dao import ProveedorDAO
 from dao.sede_dao import SedeDAO
 from dao.area_dao import AreaDAO
 from schemas.detalle_inventario_schema import DetalleInventarioCrear, DetalleInventarioActualizar
