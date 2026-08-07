@@ -159,5 +159,13 @@ class SedeDAO:
         conn.close()
         self.__log.info(f"Sede eliminada: {s.nombre} (ID={id_sede})")
         return True
-
+    
+    def total(self):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) AS total FROM sede")
+        total = cursor.fetchone()["total"]
+        cursor.close()
+        conn.close()
+        return total
         
