@@ -1,116 +1,55 @@
-import re
-from typing import Optional
-from pydantic import BaseModel, field_validator
+# routers/proveedor.py
+from fastapi import APIRouter, HTTPException
+from dao.proveedor_dao import ProveedorDAO
+from schemas.proveedor_schema import ProveedorCrear, ProveedorActualizar
+from config.sistema_config import ProveedorDuplicadoError, ProveedorNoEncontradoError, ProveedorConActivosError
 
-TIPOS_DOCUMENTO_VALIDOS = {"RUC", "DNI", "CE", "PASAPORTE"}
-
-
-class ProveedorCrear(BaseModel):
-    numero_documento_proveedor: str
-    tipo_documento: str
-    razon_social: str
-    telefono: Optional[str] = None
-    correo: Optional[str] = None
-
-    @field_validator("numero_documento_proveedor")
-    @classmethod
-    def validar_numero_documento(cls, valor):
-        valor = valor.strip().upper()
-        if not valor:
-            raise ValueError("El numero de documento no puede estar vacio")
-        if not re.fullmatch(r"[A-Z0-9\-]{5,20}", valor):
-            raise ValueError("El numero de documento debe tener entre 5 y 20 caracteres alfanumericos")
-        return valor
-
-    @field_validator("tipo_documento")
-    @classmethod
-    def validar_tipo_documento(cls, valor):
-        valor = valor.strip().upper()
-        if valor not in TIPOS_DOCUMENTO_VALIDOS:
-            opciones = ", ".join(sorted(TIPOS_DOCUMENTO_VALIDOS))
-            raise ValueError(f"El tipo de documento debe ser uno de: {opciones}")
-        return valor
-
-    @field_validator("razon_social")
-    @classmethod
-    def validar_razon_social(cls, valor):
-        valor = valor.strip()
-        if len(valor) < 3:
-            raise ValueError("La razon social debe tener al menos 3 caracteres")
-        return valor
-
-    @field_validator("telefono")
-    @classmethod
-    def validar_telefono(cls, valor):
-        if valor is None:
-            return valor
-        valor = valor.strip()
-        if not re.fullmatch(r"\d{6,15}", valor):
-            raise ValueError("El telefono debe tener entre 6 y 15 digitos numericos")
-        return valor
-
-    @field_validator("correo")
-    @classmethod
-    def validar_correo(cls, valor):
-        if valor is None:
-            return valor
-        valor = valor.strip().lower()
-        if not re.fullmatch(r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$", valor):
-            raise ValueError("El correo debe tener formato usuario@dominio.com")
-        return valor
+router = APIRouter(prefix="/proveedores", tags=["Proveedores"])
+dao = ProveedorDAO()
 
 
-class ProveedorActualizar(BaseModel):
-    tipo_documento: Optional[str] = None
-    razon_social: Optional[str] = None
-    telefono: Optional[str] = None
-    correo: Optional[str] = None
-
-    @field_validator("tipo_documento")
-    @classmethod
-    def validar_tipo_documento(cls, valor):
-        if valor is None:
-            return valor
-        valor = valor.strip().upper()
-        if valor not in TIPOS_DOCUMENTO_VALIDOS:
-            opciones = ", ".join(sorted(TIPOS_DOCUMENTO_VALIDOS))
-            raise ValueError(f"El tipo de documento debe ser uno de: {opciones}")
-        return valor
-
-    @field_validator("razon_social")
-    @classmethod
-    def validar_razon_social(cls, valor):
-        if valor is None:
-            return valor
-        valor = valor.strip()
-        if len(valor) < 3:
-            raise ValueError("La razon social debe tener al menos 3 caracteres")
-        return valor
-
-    @field_validator("telefono")
-    @classmethod
-    def validar_telefono(cls, valor):
-        if valor is None:
-            return valor
-        valor = valor.strip()
-        if not re.fullmatch(r"\d{6,15}", valor):
-            raise ValueError("El telefono debe tener entre 6 y 15 digitos numericos")
-        return valor
-
-    @field_validator("correo")
-    @classmethod
-    def validar_correo(cls, valor):
-        if valor is None:
-            return valor
-        valor = valor.strip().lower()
-        if not re.fullmatch(r"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$", valor):
-            raise ValueError("El correo debe tener formato usuario@dominio.com")
-        return valor
+@router.post("", status_code=201)
+def crear_proveedor(datos: ProveedorCrear):
+    from modelos.proveedor import Proveedor
+    try:
+        proveedor = Proveedor(
+            datos.numero_documento_proveedor, datos.tipo_documento,
+            datos.razon_social, datos.telefono, datos.correo,
+        )
+        return dao.insertar(proveedor).to_dict()
+    except ProveedorDuplicadoError as e:
+        raise HTTPException(status_code=409, detail=str(e))
 
 
-class ProveedorRespuesta(BaseModel):
-    numero_documento_proveedor: str
-    tipo_documento: str
-    razon_social: str
-    telefono: Optional[str] = None
-    correo: Optional[str] = None
+@router.get("")
+def listar_proveedores():
+    return [p.to_dict() for p in dao.obtener_todos()]
+
+
+@router.get("/{numero_documento_proveedor}")
+def obtener_proveedor(numero_documento_proveedor: str):
+    proveedor = dao.buscar_por_id(numero_documento_proveedor.upper())
+    if not proveedor:
+        raise HTTPException(status_code=404, detail=f"No se encontro el proveedor con documento '{numero_documento_proveedor}'")
+    return proveedor.to_dict()
+
+
+@router.put("/{numero_documento_proveedor}")
+def actualizar_proveedor(numero_documento_proveedor: str, datos: ProveedorActualizar):
+    try:
+        return dao.actualizar(
+            numero_documento_proveedor.upper(), datos.tipo_documento,
+            datos.razon_social, datos.telefono, datos.correo,
+        ).to_dict()
+    except ProveedorNoEncontradoError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.delete("/{numero_documento_proveedor}", status_code=204)
+def eliminar_proveedor(numero_documento_proveedor: str):
+    try:
+        dao.eliminar(numero_documento_proveedor.upper())
+    except ProveedorNoEncontradoError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except ProveedorConActivosError as e:
+        raise HTTPException(status_code=409, detail=str(e))

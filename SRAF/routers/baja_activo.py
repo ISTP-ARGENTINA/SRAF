@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from dao.baja_activo_dao import BajaActivoDAO
 from dao.activo_dao import ActivoDAO
 from dao.categoria_activo_dao import CategoriaActivoDAO
-from dao.prooveedor_dao import ProveedorDAO
+from dao.proveedor_dao import ProveedorDAO
 from dao.sede_dao import SedeDAO
 from dao.area_dao import AreaDAO
 from dao.usuario_dao import UsuarioDAO

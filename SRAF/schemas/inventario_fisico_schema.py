@@ -20,7 +20,7 @@ class InventarioFisicoCrear(BaseModel):
             raise ValueError(f"El año no puede ser mayor a {anio_actual + 1}")
         return valor
 
-class InventarioFisioCerrar(BaseModel):
+class InventarioFisicoCerrar(BaseModel):
     fecha_fin: Optional[datetime.date] = None
 
     @field_validator("fecha_fin")
@@ -30,9 +30,9 @@ class InventarioFisioCerrar(BaseModel):
             return valor
         if valor > datetime.date.today():
             raise ValueError("La fecha de cierre no puede ser futura") 
-            return valor
+        return valor
 
-class InventarioFisicoRespuesta(Basemodel):
+class InventarioFisicoRespuesta(BaseModel):
     id_inventario: int
     anio: int
     fecha_inicio: datetime.date
