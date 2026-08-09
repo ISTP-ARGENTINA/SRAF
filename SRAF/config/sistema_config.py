@@ -78,4 +78,11 @@ class ProveedorNoEncontradoError(Exception):
 class InventarioNoEncontradoError(Exception):
     def __init__(self, id_inventario):
         super().__init__(f"No se encontró el inventario físico con ID={id_inventario}")
-    
+
+class CategoriaConActivosError(Exception):
+    def __init__(self, id_categoria):
+        super().__init__(f"No se puede eliminar la categoría con ID={id_categoria} porque tiene activos asociados")
+        
+class SedeConActivosError(Exception):
+    def __init__(self, id_sede):
+        super().__init__(f"No se puede eliminar la sede con ID={id_sede} porque tiene activos asociados")
