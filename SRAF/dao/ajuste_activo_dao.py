@@ -1,25 +1,25 @@
 from config.base_datos import obtener_conexion
-from config.logger import logger
+from config.logger import Logger
 from config.sistema_config import AjusteNoEncontradoError
 from modelos.ajuste_activo import AjusteActivo
 
 class AjusteActivoDAO:
     def __init__(self):
-        self.logger = logger
+        self.logger = Logger()
         
     def insertar(self, ajuste):
-        conn = obtener_conexion
+        conn = obtener_conexion()
         cursor = conn.cursor()
         cursor.execute("""
             
             INSERT INTO ajuste_activo
             (        
                 tipo_ajuste,
-                valor_acterior,
+                valor_anterior,
                 valor_nuevo,
                 observacion,
                 id_activo,
-                id_usuario,
+                id_usuario
             )
             VALUES
             (
