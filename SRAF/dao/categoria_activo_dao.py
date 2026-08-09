@@ -4,7 +4,7 @@ from config.sistema_config import (CategoriaDuplicadaError, CategoriaNoEncontrad
 
 from modelos.categoria_activo import CategoriaActivo
 
-class CategoriaActivioDAO:
+class CategoriaActivoDAO:
     def __init__(self):
         self.logger = logger()
         
@@ -14,10 +14,10 @@ class CategoriaActivioDAO:
         
         cursor = conn.cursor()
         
-        cursor.excecute("""
+        cursor.execute("""
             SELECT nombre
             FROM categoria_activo
-            WHERE nombre = ?
+            WHERE nombre = %s
         """, categoria.nombre)
         
         if cursor.fetchone():
@@ -48,7 +48,7 @@ class CategoriaActivioDAO:
         conn.close()
         
         
-        self.looger.info(
+        self.logger.info(
             f"Categoria registrada ID={categoria.id_categoria}"
         )
         
@@ -60,7 +60,7 @@ class CategoriaActivioDAO:
         
         cursor.execute("""
             SELECT
-                id_categoira,
+                id_categoria,
                 nombre,
                 descripcion
             FROM categoria_activo
@@ -89,8 +89,8 @@ class CategoriaActivioDAO:
         
         cursor.execute("""
             SELECT *
-            FROM categorira_activo
-            WHERE id_categoria = ?
+            FROM categoria_activo
+            WHERE id_categoria = %s
         """, id_categoria)
         
         fila = cursor.fetchone()
@@ -113,9 +113,9 @@ class CategoriaActivioDAO:
         cursor.execute("""
             UPDATE categoria_activo
             SET
-                nombre =?,
-                descripcion = ?
-            WHERE id_categoria = ?
+                nombre = %s,
+                descripcion = %s
+            WHERE id_categoria = %s
             
         """,nuevo_nombre,nueva_descripcion,id_categoria)
         
@@ -141,7 +141,7 @@ class CategoriaActivioDAO:
         cursor.execute("""
             SELECT id_categoria
             FROM categoria_activo
-            WHERE id_categoria = ?
+            WHERE id_categoria = %s
         """, id_categoria)
         
         if cursor.fetchone() is None:
