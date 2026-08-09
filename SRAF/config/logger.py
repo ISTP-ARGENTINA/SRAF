@@ -1,6 +1,6 @@
 import datetime
 
-class logger:
+class Logger:
     
     _instancia = None
     

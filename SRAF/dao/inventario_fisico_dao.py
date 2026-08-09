@@ -1,11 +1,11 @@
 from config.base_datos import obtener_conexion
-from config.logger import logger
+from config.logger import Logger
 from config.sistema_config import (InventarioNoEncontradoError)
 from modelos.inventario_fisico import InventarioFisico
 
 class InventarioFisicoDAO:
     def __init__(self):
-        self.logger = logger()
+        self.logger = Logger()
         
     def insertar(self, inventario):
         conn = obtener_conexion()

@@ -1,6 +1,6 @@
 import psycopg2
 from config.base_datos import obtener_conexion
-from config.logger import logger
+from config.logger import Logger
 from config.sistema_config import (SedeDuplicadaError, SedeNoEncontradaError,SedeConActivosError)
 
 from modelos.sede import Sede
@@ -8,7 +8,7 @@ from modelos.sede import Sede
 class SedeDAO:
     def __init__(self):
     
-        self.logger = logger()
+        self.logger = Logger()
         
     def insertar(self, sede):
         if self.buscar_por_nombre(sede.nombre):

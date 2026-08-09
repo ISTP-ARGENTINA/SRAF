@@ -20,8 +20,8 @@ class Area():
     def from_dict(cls, datos):
         
         area = cls(
-            datos=["nombre"],
-            datos=["descripcion"])
+            datos["nombre"],
+            datos["descripcion"])
     
         area.id_area = datos["id_area"]
         return area

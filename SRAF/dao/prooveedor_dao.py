@@ -1,12 +1,12 @@
 from config.base_datos import obtener_conexion
-from config.logger import logger
+from config.logger import Logger
 from config.sistema_config import (ProveedorDuplicadoError, ProveedorNoEncontradoError)
 from modelos.proveedor import Proveedor
 
 
 class ProveedorDAO:
     def __init__(self):
-        self.logger = logger()
+        self.logger = Logger()
     
     #INSERTAR SEDE
     def insertar(self, proveedor):

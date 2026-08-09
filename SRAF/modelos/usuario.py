@@ -1,6 +1,6 @@
 import datetime
 
-class usuario():
+class Usuario():
     def __init__(self, nombres, apellidos, nombre_usuario ,correo , contraseña, rol, estado="ACTIVO"):
         self.id_usuario       = None
         self.nombres          = nombres

@@ -1,13 +1,13 @@
 import psycopg2
 from config.base_datos import obtener_conexion
-from config.logger import logger
-from config.sistema_config import (AreaDuplicidadError, AreaNoEncontradaError)
+from config.logger import Logger
+from config.sistema_config import (AreaDuplicadaError, AreaNoEncontradaError)
 from modelos.area import Area
 
-class AreaDao:
+class AreaDAO:
     
     def __init__(self):
-        self.logger = logger()
+        self.logger = Logger()
         
     def insertar(self, area):
         conn = obtener_conexion()
@@ -21,7 +21,7 @@ class AreaDao:
         if cursor.fetchone():
             conn.close()
             
-            raise AreaDuplicidadError(
+            raise AreaDuplicadaError(
                 area.nombre
             )
         #aqui inserta la nueva area

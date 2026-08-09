@@ -1,188 +1,122 @@
+# dao/detalle_inventario_dao.py
+import psycopg2
+from config.logger import Logger
 from config.base_datos import obtener_conexion
-from config.logger import logger
-
-from config.sistema_config import (DetalleInventarioDuplicadoError, DetalleInventarioNoEncontradoError)
 from modelos.detalle_inventario import DetalleInventario
+from config.sistema_config import (
+    DetalleNoEncontradoError,
+    ActivoYaEscaneadoError,
+    InventarioNoEncontradoError,
+    InventarioCerradoError,
+    ActivoNoEncontradoError,
+)
 
-class DetalleInventarioDao:
-    def __init__(self):
-        self.logger = logger()
-        
+
+class DetalleInventarioDAO:
+    def __init__(self, inventario_dao, activo_dao):
+        self.__log = Logger()
+        self.__inventario_dao = inventario_dao
+        self.__activo_dao = activo_dao
+
     def insertar(self, detalle):
+        inventario = self.__inventario_dao.buscar_por_id(detalle.id_inventario)
+        if not inventario:
+            raise InventarioNoEncontradoError(detalle.id_inventario)
+        if inventario.estado == "CERRADO":
+            raise InventarioCerradoError(detalle.id_inventario)
+        if not self.__activo_dao.buscar_por_id(detalle.id_activo):
+            raise ActivoNoEncontradoError(detalle.id_activo)
+
         conn = obtener_conexion()
         cursor = conn.cursor()
-        
-        cursor.excecute("""
-            SELECT id_detalle
-            FROM detalle_inventario
-            WHERE id_inventario = ?
-            AND id_inventario = ?
-        """,
-        detalle.id_inventario,
-        detalle.id_activo)
-        
-        if cursor.fetchone():
+        try:
+            cursor.execute(
+                """INSERT INTO detalle_inventario (id_inventario, id_activo, encontrado, observacion)
+                VALUES (%s, %s, %s, %s) RETURNING id_detalle""",
+                (detalle.id_inventario, detalle.id_activo, detalle.encontrado, detalle.observacion),
+            )
+            detalle.id_detalle = cursor.fetchone()["id_detalle"]
+            conn.commit()
+        except psycopg2.errors.UniqueViolation:
+            conn.rollback()
+            cursor.close()
             conn.close()
-            
-            raise DetalleInventarioDuplicadoError(
-                detalle.id_inventario,
-                detalle.id_activo
-            )
-        
-        cursor.execute("""
-            INSERT INTO detalle_inventario
-            (
-                id_inventario,
-                id_activo,
-                encontrado,
-                observado
-            )
-            VALUES
-            (
-                ?,?,?,?
-            )
-        """,
-        detalle.id_inventario,
-        detalle.id_activo,
-        detalle.encontrado,
-        detalle.observacion)
-        
-        conn.commit()
-        
-        cursor.execute("SELECT @@IDENTITY")
-        
-        detalle.id_detalle = cursor.fetchone()[0]
-        
+            raise ActivoYaEscaneadoError(detalle.id_inventario, detalle.id_activo)
+
+        cursor.close()
         conn.close()
-        
-        self.logger.info(
-            f"Detalle registrado ID={detalle.id_detalle}"
-        )
-        
+        self.__log.info(f"Detalle de inventario registrado: ID={detalle.id_detalle}")
         return detalle
-    
-    def obtener_todos(self):
-        
-        conn = obtener_conexion()
-        
-        cursor = conn.cursor()
-        
-        cursor.execute("""
-            SELECT
-                id_detalle,
-                id_inventario,
-                id_activo,
-                encontrado,
-                observado,
-            FROM detalle_inventario
-            ORDER BY id_detalle
-        """)
-        
-        detalles = []
-        
-        for fila in cursor.fetchall():
-            detalle = DetalleInventario(
-                fila.id_inventario,
-                fila.id_activo,
-                fila.encontrado,
-                fila.observado
-            )
-            
-            detalle.id_detalle = fila.id_detalle
-            detalle.append(detalle)
-            
-        conn.close()
-            
-        return detalles
-    
-    def actualizar(self, id_detalle, encontrado=None, observacion=None):
+
+    def buscar_por_id(self, id_detalle):
         conn = obtener_conexion()
         cursor = conn.cursor()
-        
-        cursor.execute("""
-            SELECT *
-            FROM detalle_inventario
-            WHERE id_detalle = ?
-        """, id_detalle)
-        
+        cursor.execute("SELECT * FROM detalle_inventario WHERE id_detalle = %s", (id_detalle,))
         fila = cursor.fetchone()
-        
-        if fila is None:
-            conn.close()
-            
-            raise DetalleInventarioNoEncontradoError(
-                id_detalle
-            )
-            
-        nuevo_encontrado = (
-            encontrado
-            if encontrado is not None
-            else fila.encontrado
-        )
-        
-        nueva_observacion = (
-            observacion
-            if observacion
-            else fila.observacion
-        )
-        
-        cursor.execute("""
-            UPDATE datelle_inventario
-            SET
-                encontrado = ?,
-                observado = ?
-            WHERE id_detalle = ?
-        """,
-        nuevo_encontrado,
-        nueva_observacion,
-        id_detalle)
-        
-        conn.commit()
-        
+        cursor.close()
         conn.close()
-        
-        detalle = DetalleInventario(
-            fila.id_inventario,
-            fila.id_activo,
-            nuevo_encontrado,
-            nueva_observacion
-        )
-        
-        detalle.id_detalle = id_detalle
-        
-        self.logger.info(
-            f"Detalle actualizado ID={id_detalle}"
-        )
-        
-        return detalle
-    
-    def eliminar(self, id_detalle):
+        return DetalleInventario.from_dict(fila) if fila else None
+
+    def obtener_por_inventario(self, id_inventario):
         conn = obtener_conexion()
         cursor = conn.cursor()
-        
-        cursor.execute("""
-            SELECT id_detalle
-            FROM detalle_inventario
-            WHERE id_detalle = ?
-        """, id_detalle)
-        
-        if cursor.fetchone() is None:
-            conn.close()
-            
-            raise DetalleInventarioNoEncontradoError(
-                id_detalle
-            )
-        
-        cursor.execute("""
-            DELETE
-            FROM detalle_inventario
-            WHERE id_detalle = ?
-        """, id_detalle)
-        
-        conn.commit()
-        
+        cursor.execute("SELECT * FROM detalle_inventario WHERE id_inventario = %s", (id_inventario,))
+        filas = cursor.fetchall()
+        cursor.close()
         conn.close()
-        
-        self.logger.warning(
-            f"Detalle eliminado ID={id_detalle}"
+        return [DetalleInventario.from_dict(f) for f in filas]
+
+    def obtener_por_activo(self, id_activo):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM detalle_inventario WHERE id_activo = %s", (id_activo,))
+        filas = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return [DetalleInventario.from_dict(f) for f in filas]
+
+    def actualizar(self, id_detalle, encontrado=None, observacion=None):
+        d = self.buscar_por_id(id_detalle)
+        if not d:
+            raise DetalleNoEncontradoError(id_detalle)
+
+        nuevo_encontrado = encontrado if encontrado is not None else d.encontrado
+        nueva_observacion = observacion if observacion is not None else d.observacion
+
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        cursor.execute(
+            "UPDATE detalle_inventario SET encontrado=%s, observacion=%s WHERE id_detalle=%s",
+            (nuevo_encontrado, nueva_observacion, id_detalle),
         )
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        d.encontrado = nuevo_encontrado
+        d.observacion = nueva_observacion
+        self.__log.info(f"Detalle de inventario actualizado: ID={id_detalle}")
+        return d
+
+    def eliminar(self, id_detalle):
+        d = self.buscar_por_id(id_detalle)
+        if not d:
+            raise DetalleNoEncontradoError(id_detalle)
+
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM detalle_inventario WHERE id_detalle = %s", (id_detalle,))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        self.__log.info(f"Detalle de inventario eliminado: ID={id_detalle}")
+        return True
+
+    def total(self):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) AS total FROM detalle_inventario")
+        total = cursor.fetchone()["total"]
+        cursor.close()
+        conn.close()
+        return total
