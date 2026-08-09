@@ -21,8 +21,8 @@ class ProveedorDAO:
         cursor.execute("""
             SELECT numero_documento_proveedor
             FROM proveedor
-            WHERE numero_documento_proveedor = ?
-        """, proveedor.numero_documento_proveedor)
+            WHERE numero_documento_proveedor = %s
+        """, (proveedor.numero_documento_proveedor,))
         
         if cursor.fetchone():
             conn.close()
@@ -43,14 +43,14 @@ class ProveedorDAO:
             
             VALUES
             (
-                ?,?,?,?,?
+                %s,%s,%s,%s,%s
             )
         """,
-        proveedor.numero_documento_proveedor,
+        (proveedor.numero_documento_proveedor,
         proveedor.tipo_documento,
         proveedor.razon_social,
         proveedor.telefono,
-        proveedor.correo)
+        proveedor.correo))
         
         
         #guarda el registro

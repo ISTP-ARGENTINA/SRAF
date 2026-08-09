@@ -18,14 +18,13 @@ class InventarioFisicoDAO:
             )
             VALUES
             (
-                ?
+                %s
             )
-        """, inventario.anio)
+            RETURNING id_inventario
+        """, (inventario.anio,))
         conn.commit()
         
-        cursor.execute("SELECT @@IDENTITY")
-        
-        inventario.id_inventario = cursor.fetchone()[0]
+        inventario.id_inventario = cursor.fetchone()["id_inventario"]
         
         conn.close()
         
@@ -56,14 +55,14 @@ class InventarioFisicoDAO:
         
         for fila in cursor.fetchall():
             inventario = InventarioFisico(
-                fila.anio
+                fila["anio"]
             )
             
-            inventario.id_inventario = fila.id_inventario
-            inventario.fecha_inicio = fila.fecha_inicio
-            inventario.fecha_fin = fila.fecha_fin
-            inventario.estado = fila.estado
-            inventario.append(inventario)
+            inventario.id_inventario = fila["id_inventario"]
+            inventario.fecha_inicio = fila["fecha_inicio"]
+            inventario.fecha_fin = fila["fecha_fin"]
+            inventario.estado = fila["estado"]
+            inventarios.append(inventario)
             
         conn.close()
         
@@ -78,8 +77,8 @@ class InventarioFisicoDAO:
         cursor.execute("""
             SELECT *
             FROM inventario_fisico
-            WHERE id_inventario = ?
-        """, id_inventario)
+            WHERE id_inventario = %s
+        """, (id_inventario,))
         
         fila = cursor.fetchone()
         
@@ -90,25 +89,25 @@ class InventarioFisicoDAO:
                 id_inventario
             )
         
-        nuevo_anio = anio if anio else fila.anio
+        nuevo_anio = anio if anio else fila["anio"]
         
-        nueva_fecha_fin = fecha_fin if fecha_fin else fila.fecha_fin
+        nueva_fecha_fin = fecha_fin if fecha_fin else fila["fecha_fin"]
         
-        nuevo_estado = estado if estado else fila.estado
+        nuevo_estado = estado if estado else fila["estado"]
         
         cursor.execute("""
             UPDATE inventario_fisico
             SET
-                anio = ?,
-                fecha_fin = ?,
-                estado = ?
-            WHERE id_inventario = ?
+                anio = %s,
+                fecha_fin = %s,
+                estado = %s
+            WHERE id_inventario = %s
         """,
             
-        nuevo_anio,
+        (nuevo_anio,
         nueva_fecha_fin,
         nuevo_estado,
-        id_inventario)
+        id_inventario))
         
         conn.commit()
             
@@ -137,10 +136,10 @@ class InventarioFisicoDAO:
         cursor.execute("""
             SELECT id_inventario
             FROM inventario_fisico
-            WHERE id_inventario = ?
-        """, id_inventario)
+            WHERE id_inventario = %s
+        """, (id_inventario,))
         
-        if cursor.fectone() is None:
+        if cursor.fetchone() is None:
             
             conn.close()
             
@@ -151,8 +150,8 @@ class InventarioFisicoDAO:
         cursor.execute("""
             DELETE
             FROM inventario_fisico
-            WHERE id_inventario = ?
-        """, id_inventario)
+            WHERE id_inventario = %s
+        """, (id_inventario,))
         
         conn.commit()
         
