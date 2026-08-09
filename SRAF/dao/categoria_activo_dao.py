@@ -18,7 +18,7 @@ class CategoriaActivoDAO:
             SELECT nombre
             FROM categoria_activo
             WHERE nombre = %s
-        """, categoria.nombre)
+        """, (categoria.nombre,))
         
         if cursor.fetchone():
             conn.close()
@@ -35,18 +35,16 @@ class CategoriaActivoDAO:
             )
             VALUES
             (
-                ?,?
+                %s,%s
             )
-        """, categoria.nombre, categoria.descripcion)
+            RETURNING id_categoria
+        """, (categoria.nombre, categoria.descripcion))
         
         conn.commit()
         
-        cursor.execute("SELECT @@IDENTITY")
-        
-        categoria.id_categoria = cursor.fetchone()[0]
+        categoria.id_categoria = cursor.fetchone()["id_categoria"]
         
         conn.close()
-        
         
         self.logger.info(
             f"Categoria registrada ID={categoria.id_categoria}"
@@ -67,21 +65,22 @@ class CategoriaActivoDAO:
             ORDER BY nombre
             
         """)
-        categoria = []
+        categorias = []
         
         for fila in cursor.fetchall():
             categoria = CategoriaActivo(
-                fila.nombre,
-                fila.descripcion
+                fila["nombre"],
+                fila["descripcion"]
             )
             
-        categoria.id_categoria = fila.id_categoria
+            categoria.id_categoria = fila["id_categoria"]
+            categoria.append(categorias)
         
-        categoria.append(categoria)
+        cursor.close()
         
         conn.close()
         
-        return categoria
+        return categorias
     
     def actualizar(self,id_categoria,nombre=None,descripcion=None):
         conn = obtener_conexion()
@@ -91,7 +90,7 @@ class CategoriaActivoDAO:
             SELECT *
             FROM categoria_activo
             WHERE id_categoria = %s
-        """, id_categoria)
+        """, (id_categoria,))
         
         fila = cursor.fetchone()
         
@@ -102,12 +101,12 @@ class CategoriaActivoDAO:
                 id_categoria
             )
             
-        nuevo_nombre = nombre if nombre else fila.nombre
+        nuevo_nombre = nombre if nombre else fila["nombre"]
         
         nueva_descripcion = (
             descripcion
             if descripcion
-            else fila.descripcion
+            else fila["descripcion"]
         )
         
         cursor.execute("""
@@ -117,7 +116,7 @@ class CategoriaActivoDAO:
                 descripcion = %s
             WHERE id_categoria = %s
             
-        """,nuevo_nombre,nueva_descripcion,id_categoria)
+        """,(nuevo_nombre,nueva_descripcion,id_categoria))
         
         conn.commit()
         
@@ -127,6 +126,8 @@ class CategoriaActivoDAO:
             nuevo_nombre,
             nueva_descripcion
         )
+        
+        categoria.id_categoria = id_categoria
         
         self.logger.info(
             f"Categoria actualizada ID={id_categoria}"
@@ -142,7 +143,7 @@ class CategoriaActivoDAO:
             SELECT id_categoria
             FROM categoria_activo
             WHERE id_categoria = %s
-        """, id_categoria)
+        """, (id_categoria,))
         
         if cursor.fetchone() is None:
             conn.close()
@@ -151,10 +152,11 @@ class CategoriaActivoDAO:
                 id_categoria
             )
 
+        
         conn.commit()
             
         conn.close()
         
-        self.logger.warning(
+        self.logger.info(
             f"Categoria eliminada ID={id_categoria}"
         )
