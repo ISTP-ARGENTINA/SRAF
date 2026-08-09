@@ -16,8 +16,8 @@ class AreaDAO:
         cursor.execute("""
             SELECT nombre
             FROM area
-            WHERE nombre = ?            
-        """, area.nombre)
+            WHERE nombre = %s            
+        """, (area.nombre))
         if cursor.fetchone():
             conn.close()
             
@@ -33,18 +33,18 @@ class AreaDAO:
             )
             VALUES
             (
-                ?,?
+                %s,%s
             )
+            RETURNING id_area
         """,
-        area.mombre,
-        area.descripcion
+        (area.mombre, area.descripcion)
         )
         
         conn.commit()
         
-        cursor.execute("SELECT @@IDENTITY")
+        area.id_area = cursor.fetchone()["id_area"]
         
-        area.id_area = cursor.fetchone()[0]
+        cursor.close()
         
         conn.close()
         
@@ -64,7 +64,7 @@ class AreaDAO:
                 nombre,
                 descripcion
             FROM area
-            ORDER BYE nombre
+            ORDER BY nombre
         """)
         
         areas = []
@@ -72,16 +72,18 @@ class AreaDAO:
         for fila in cursor.fetchall():
             
             area = Area(
-                fila.nombre,
-                fila.descripcion
+                fila["nombre"],
+                fila["descripcion"]
             )
             
-            area.id_area = fila.area
+            area.id_area = fila["area"]
             areas.append(area)
             
-            conn.close()
+        cursor.close()
+        
+        conn.close()
             
-            return areas
+        return areas
         
     def actualizar(self,id_area,nombre=None,descripcion=None):
         conn = obtener_conexion()
@@ -90,9 +92,9 @@ class AreaDAO:
         cursor.execute("""
             SELECT *
             FROM area
-            WHERE id_area = ?
+            WHERE id_area = %s
             
-        """, id_area)
+        """, (id_area))
         
         fila = cursor.fetchone()
         
@@ -115,12 +117,12 @@ class AreaDAO:
         cursor.execute("""
             UPDATE area
             SET
-                nombre = ?,
-                descripcion = ?
-            WHERE id_area = ?
-        """, nuevo_nombre, nueva_descripcion, id_area)
+                nombre = %s,
+                descripcion = %s
+            WHERE id_area = %s
+        """, (nuevo_nombre, nueva_descripcion, id_area))
         
-        conn.commit
+        conn.commit()
         
         conn.close()
         
@@ -131,7 +133,7 @@ class AreaDAO:
         
         area.id_area = id_area
         
-        self.looger.info(
+        self.logger.info(
             f"Area actualizada ID={id_area}"
         )
         
@@ -144,8 +146,8 @@ class AreaDAO:
         cursor.execute("""
             SELEC id_area
             FROM area
-            WHERE id_area = ?
-        """, id_area)
+            WHERE id_area = %s
+        """, (id_area))
         
         if cursor.fetchone() is None:
             conn.close()
@@ -156,7 +158,7 @@ class AreaDAO:
         cursor.execute("""
             DELETE
             FROM area
-            WHERE id_area = ?
+            WHERE id_area = %s
         """, id_area)
         
         conn.commit()
