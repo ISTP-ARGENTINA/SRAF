@@ -25,7 +25,7 @@ class AjusteActivoDAO:
             (
                 ?,?,?,?,?,?
             )
-        """,
+        RETURNING id_ajuste""",
         ajuste.tipo_ajuste,
         ajuste.valor_anterior,
         ajuste.valor_nuevo,
