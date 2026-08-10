@@ -17,6 +17,7 @@ from config.sistema_config import (
 
 
 class ActivoDAO:
+    ESTADOS_VALIDOS = {"OPERATIVO", "EN_REPARACION", "INACTIVO", "PRESTADO"}
     # Recibe los DAO de las 4 tablas maestras para validar que las FK
     # existan antes de insertar/actualizar un activo (igual que
     # ReservaDAO valida cliente_dao y tematica_dao en el otro proyecto).
