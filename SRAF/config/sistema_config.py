@@ -185,3 +185,8 @@ class DetalleInventarioDuplicadoError(Exception):
 class DetalleInventarioNoEncontradoError(Exception):
     def __init__(self, id_detalle):
         super().__init__(f"No se encontró el detalle de inventario con ID={id_detalle}")
+        
+class EstadoActivoInvalidoError(Exception):
+    def __init__(self, estado):
+        estados_validos = "OPERATIVO, EN_REPARACION, INACTIVO, PRESTADO"
+        super().__init__(f"Estado de activo inválido: '{estado}'. Debe ser uno de: {estados_validos}")

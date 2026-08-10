@@ -12,6 +12,7 @@ from config.sistema_config import (
     ProveedorNoEncontradoError,
     SedeNoEncontradaError,
     AreaNoEncontradaError,
+    EstadoActivoInvalidoError,
 )
 
 
@@ -173,6 +174,9 @@ class ActivoDAO:
         a = self.buscar_por_id(id_activo)
         if not a:
             raise ActivoNoEncontradoError(id_activo)
+        if nuevo_estado not in self.ESTADOS_VALIDOS:
+            raise EstadoActivoInvalidoError(nuevo_estado)
+
 
         conn = obtener_conexion()
         cursor = conn.cursor()

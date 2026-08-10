@@ -101,7 +101,7 @@ def inicializar():
             apellidos      VARCHAR(100) NOT NULL,
             nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
             correo         VARCHAR(100) NOT NULL UNIQUE,
-            "contraseña"   VARCHAR(255) NOT NULL,
+            contrasena     VARCHAR(255) NOT NULL,
             rol            VARCHAR(30) NOT NULL,
             estado         estado_usuario_enum NOT NULL DEFAULT 'ACTIVO',
             fecha_creacion TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -113,7 +113,7 @@ def inicializar():
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS inventario_fisico (
             id_inventario SERIAL PRIMARY KEY,
-            "año"         INT NOT NULL CHECK ("año" >= 2020),
+            anio          INT NOT NULL CHECK ("año" >= 2020),
             fecha_inicio  DATE NOT NULL DEFAULT CURRENT_DATE,
             fecha_fin     DATE,
             estado        estado_inventario_enum NOT NULL DEFAULT 'ABIERTO'
