@@ -1,7 +1,7 @@
 import psycopg2
 from config.base_datos import obtener_conexion
 from config.logger import Logger
-from config.sistema_config import (AreaDuplicadaError, AreaNoEncontradaError, AreaConActivosError)
+from config.sistema_config import (AreaDuplicadaError, AreaNoEncontradaError)
 from modelos.area import Area
 
 class AreaDAO:

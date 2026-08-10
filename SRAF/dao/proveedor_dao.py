@@ -1,6 +1,7 @@
+import psycopg2
 from config.base_datos import obtener_conexion
 from config.logger import Logger
-from config.sistema_config import (ProveedorDuplicadoError, ProveedorNoEncontradoError)
+from config.sistema_config import (ProveedorDuplicadoError, ProveedorNoEncontradoError, ProveedorConActivosError)
 from modelos.proveedor import Proveedor
 
 
@@ -11,7 +12,7 @@ class ProveedorDAO:
     #INSERTAR SEDE
     def insertar(self, proveedor):
         
-        #abre la conexion sql
+        #abre la conexion sq
         conn = obtener_conexion()
         
         #ejecuta la consulta sql

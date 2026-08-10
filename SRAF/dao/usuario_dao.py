@@ -20,7 +20,7 @@ class UsuarioDAO:
         conn = obtener_conexion()
         cursor = conn.cursor()
         cursor.execute(
-            """INSERT INTO usuario (nombres, apellidos, nombre_usuario, correo, "contrasena", rol, estado)
+            """INSERT INTO usuario (nombres, apellidos, nombre_usuario, correo, contrasena, rol, estado)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING id_usuario, fecha_creacion, ultimo_acceso""",
             (usuario.nombres, usuario.apellidos, usuario.nombre_usuario,
@@ -43,7 +43,7 @@ class UsuarioDAO:
         fila = cursor.fetchone()
         cursor.close()
         conn.close()
-        return Usuario.from_dict(self.__normalizar(fila)) if fila else None
+        return Usuario.from_dict(fila) if fila else None
 
     def buscar_por_nombre_usuario(self, nombre_usuario):
         conn = obtener_conexion()
@@ -52,7 +52,7 @@ class UsuarioDAO:
         fila = cursor.fetchone()
         cursor.close()
         conn.close()
-        return Usuario.from_dict(self.__normalizar(fila)) if fila else None
+        return Usuario.from_dict(fila) if fila else None
 
     def buscar_por_correo(self, correo):
         conn = obtener_conexion()
@@ -61,7 +61,7 @@ class UsuarioDAO:
         fila = cursor.fetchone()
         cursor.close()
         conn.close()
-        return Usuario.from_dict(self.__normalizar(fila)) if fila else None
+        return Usuario.from_dict(fila) if fila else None
 
     def obtener_todos(self):
         conn = obtener_conexion()
@@ -70,7 +70,7 @@ class UsuarioDAO:
         filas = cursor.fetchall()
         cursor.close()
         conn.close()
-        return [Usuario.from_dict(self.__normalizar(f)) for f in filas]
+        return [Usuario.from_dict(f) for f in filas]
 
     def actualizar(self, id_usuario, nombres=None, apellidos=None, correo=None, rol=None):
         u = self.buscar_por_id(id_usuario)
@@ -150,11 +150,3 @@ class UsuarioDAO:
         cursor.close()
         conn.close()
         return total
-
-    # La columna en BD se llama "contraseña" (con ñ) pero el modelo Python
-    # usa "contrasena" (sin ñ, para evitar líos de encoding en el codigo).
-    # Este helper traduce la fila de la BD antes de pasarla a Usuario.from_dict().
-    def __normalizar(self, fila):
-        datos = dict(fila)
-        datos["contrasena"] = datos.pop("contraseña")
-        return datos

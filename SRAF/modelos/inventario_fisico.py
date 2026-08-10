@@ -29,7 +29,7 @@ class InventarioFisico:
         inventario = cls(
             datos["anio"],
             datos["fecha_inicio"],
-            datos["fecha-fin"],
+            datos["fecha_fin"],
             datos["estado"]
         )
         inventario.id_inventario = datos["id_inventario"]
