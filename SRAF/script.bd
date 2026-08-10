@@ -3,8 +3,7 @@
 -- MOTOR: PostgreSQL
 -- =============================================================================
 -- ENUMS (Tipos de datos personalizados para asegurar restricciones de negocio)
-CREATE TYPE estado_activo_enum AS ENUM ('OPERATIVO', 'EN_REPARACION', 'INACTIVO',
-'PRESTADO');
+CREATE TYPE estado_activo_enum AS ENUM ('OPERATIVO', 'EN_REPARACION', 'INACTIVO','PRESTADO');
 CREATE TYPE estado_usuario_enum AS ENUM ('ACTIVO', 'INACTIVO', 'BLOQUEADO');
 CREATE TYPE estado_inventario_enum AS ENUM ('ABIERTO', 'EN_PROCESO', 'CERRADO');
 CREATE TYPE tipo_ajuste_enum AS ENUM ('INCREMENTO', 'DISMINUCION', 'CORRECCION');
@@ -45,7 +44,7 @@ nombres VARCHAR(100) NOT NULL,
 apellidos VARCHAR(100) NOT NULL,
 nombre_usuario VARCHAR(50) NOT NULL UNIQUE,
 correo VARCHAR(100) NOT NULL UNIQUE,
-contraseña VARCHAR(255) NOT NULL,
+contrasena VARCHAR(255) NOT NULL,
 rol VARCHAR(30) NOT NULL,
 estado estado_usuario_enum NOT NULL DEFAULT 'ACTIVO',
 fecha_creacion TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -124,8 +123,7 @@ id_activo INT NOT NULL REFERENCES activo(id_activo) ON DELETE RESTRICT ON
 UPDATE CASCADE,
 encontrado BOOLEAN NOT NULL DEFAULT TRUE,
 observacion TEXT,
--- Evita que se escanee el mismo activo más de una vez en una misma campaña
-de inventario
+-- Evita que se escanee el mismo activo más de una vez en una misma campaña de inventario
 CONSTRAINT uq_inventario_activo UNIQUE (id_inventario, id_activo)
 );
 -- =============================================================================
@@ -146,26 +144,20 @@ INSERT INTO categoria_activo (nombre, descripcion) VALUES
 ('Equipos de Cómputo', 'Laptops, servidores, monitores y periféricos'),
 ('Mobiliario de Oficina', 'Escritorios, sillas ergonómicas, estantes'),
 ('Vehículos', 'Unidades móviles de transporte logístico y operativo');
-INSERT INTO proveedor (numero_documento_proveedor, tipo_documento, razon_social,
-telefono, correo) VALUES
-('20555444331', 'RUC', 'Tecnología Global S.A.C.', '987654321',
-'ventas@tecglobal.pe'),
-('20111222334', 'RUC', 'Muebles Industriales EIRL', '912345678',
-'contacto@mueblesind.com');
+INSERT INTO proveedor (numero_documento_proveedor, tipo_documento, razon_social, telefono, correo) VALUES
+('20555444331', 'RUC', 'Tecnología Global S.A.C.', '987654321', 'ventas@tecglobal.pe'),
+('20111222334', 'RUC', 'Muebles Industriales EIRL', '912345678', 'contacto@mueblesind.com');
 INSERT INTO sede (nombre, direccion, city) VALUES
 ('Sede Central', 'Av. Las Flores 456', 'Lima'),
 ('Almacén Norte', 'Calle Los Álamos 102', 'Piura');
 INSERT INTO area (nombre, descripcion) VALUES
-('Tecnologías de Información', 'Soporte, desarrollo e infraestructura
-tecnológica'),
+('Tecnologías de Información', 'Soporte, desarrollo e infraestructura tecnológica'),
 ('Contabilidad y Finanzas', 'Gestión económica, tesorería y auditorías');
 -- Password de ejemplo plano: 'admin123'
-INSERT INTO usuario (nombres, apellidos, nombre_usuario, correo, contraseña, rol)
+INSERT INTO usuario (nombres, apellidos, nombre_usuario, correo, contrasena, rol)
 VALUES
-('Juan', 'Pérez', 'jperez_admin', 'jperez@empresa.com', '$2b$10$OEk.X8g1hM0...',
-'ADMINISTRADOR'),
-('Ana', 'Gómez', 'agomez_patrimonio', 'agomez@empresa.com', '$2b$10$f6fKjR8z...',
-'ADMINISTRADOR_ACTIVOS');
+('Juan', 'Pérez', 'jperez_admin', 'jperez@empresa.com', '$2b$10$OEk.X8g1hM0...', 'ADMINISTRADOR'),
+('Ana', 'Gómez', 'agomez_patrimonio', 'agomez@empresa.com', '$2b$10$f6fKjR8z...', 'ADMINISTRADOR_ACTIVOS');
 INSERT INTO activo (codigo_patrimonial, descripcion, marca, modelo, serie,
 tipo_comprobante, serie_comprobante, numero_comprobante, fecha_compra,
 valor_compra, id_categoria, numero_documento_proveedor, id_sede, id_area) VALUES
@@ -173,10 +165,8 @@ valor_compra, id_categoria, numero_documento_proveedor, id_sede, id_area) VALUES
 'Factura', 'E001', '0004512', '2026-01-15', 3500.00, 1, '20555444331', 1, 1),
 ('PAT-2026-0002', 'Silla Ergonómica Pro', 'Mesh', 'Ergo-X', 'SN-MESH-992',
 'Factura', 'F002', '0008951', '2026-02-20', 650.00, 2, '20111222334', 1, 2);
-INSERT INTO inventario_fisico (año, estado) VALUES
+INSERT INTO inventario_fisico (anio, estado) VALUES
 (2026, 'ABIERTO');
 -- Registramos el escaneo del primer activo en la campaña de inventario abierta
-INSERT INTO detalle_inventario (id_inventario, id_activo, encontrado,
-observacion) VALUES
-(1, 1, TRUE, 'Equipo verificado en posesión del Desarrollador Senior. En óptimo
-estado.');
+INSERT INTO detalle_inventario (id_inventario, id_activo, encontrado, observacion) VALUES
+(1, 1, TRUE, 'Equipo verificado en posesión del Desarrollador Senior. En óptimo estado.');

@@ -11,7 +11,7 @@ class ProveedorDAO:
     #INSERTAR SEDE
     def insertar(self, proveedor):
         
-        #abre la conexion sqñ
+        #abre la conexion sql
         conn = obtener_conexion()
         
         #ejecuta la consulta sql
