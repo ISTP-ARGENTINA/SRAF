@@ -109,11 +109,11 @@ def inicializar():
         )
     """)
 
-    # Tabla inventario_fisico. "año" también va entre comillas por la ñ.
+    # Tabla inventario_fisico.
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS inventario_fisico (
             id_inventario SERIAL PRIMARY KEY,
-            anio          INT NOT NULL CHECK ("año" >= 2020),
+            anio          INT NOT NULL CHECK (anio >= 2020),
             fecha_inicio  DATE NOT NULL DEFAULT CURRENT_DATE,
             fecha_fin     DATE,
             estado        estado_inventario_enum NOT NULL DEFAULT 'ABIERTO'
