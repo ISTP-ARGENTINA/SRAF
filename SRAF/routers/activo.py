@@ -15,6 +15,7 @@ from config.sistema_config import (
     ProveedorNoEncontradoError,
     SedeNoEncontradaError,
     AreaNoEncontradaError,
+    EstadoActivoInvalidoError,
 )
 
 router = APIRouter(prefix="/activos", tags=["Activos"])
@@ -75,6 +76,8 @@ def cambiar_estado_activo(id_activo: int, datos: ActivoCambiarEstado):
         return dao.cambiar_estado(id_activo, datos.estado).to_dict()
     except ActivoNoEncontradoError as e:
         raise HTTPException(status_code=404, detail=str(e))
+    except EstadoActivoInvalidoError as e:
+        raise HTTPException(status_code=422, detail=str(e))
 
 
 @router.delete("/{id_activo}", status_code=204)

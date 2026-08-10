@@ -12,10 +12,12 @@ from config.sistema_config import (
     ProveedorNoEncontradoError,
     SedeNoEncontradaError,
     AreaNoEncontradaError,
+    EstadoActivoInvalidoError,
 )
 
 
 class ActivoDAO:
+    ESTADOS_VALIDOS = {"OPERATIVO", "EN_REPARACION", "INACTIVO", "PRESTADO"}
     # Recibe los DAO de las 4 tablas maestras para validar que las FK
     # existan antes de insertar/actualizar un activo (igual que
     # ReservaDAO valida cliente_dao y tematica_dao en el otro proyecto).
@@ -173,6 +175,9 @@ class ActivoDAO:
         a = self.buscar_por_id(id_activo)
         if not a:
             raise ActivoNoEncontradoError(id_activo)
+        if nuevo_estado not in self.ESTADOS_VALIDOS:
+            raise EstadoActivoInvalidoError(nuevo_estado)
+
 
         conn = obtener_conexion()
         cursor = conn.cursor()

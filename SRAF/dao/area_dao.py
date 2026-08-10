@@ -1,7 +1,7 @@
 import psycopg2
 from config.base_datos import obtener_conexion
 from config.logger import Logger
-from config.sistema_config import (AreaDuplicadaError, AreaNoEncontradaError)
+from config.sistema_config import (AreaDuplicadaError, AreaNoEncontradaError, AreaConActivosError)
 from modelos.area import Area
 
 class AreaDAO:
@@ -19,6 +19,9 @@ class AreaDAO:
             WHERE nombre = %s            
         """, (area.nombre,))
         if cursor.fetchone():
+            
+            cursor.close()
+            
             conn.close()
             
             raise AreaDuplicadaError(
@@ -51,6 +54,29 @@ class AreaDAO:
         self.logger.info(
             f"Area registrada ID={area.id_area}"
         )
+        
+        return area
+    
+    def buscar_por_id(self, id_area):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id_area, nombre, descripcion
+            FROM area
+            WHERE id_area = %s
+        """, (id_area,))
+        
+        fila = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        if fila is None:
+            return None
+        
+        area = Area(fila["nombre"], fila["descripcion"])
+        area.id_area = fila["id_area"]
         
         return area
     
@@ -100,6 +126,8 @@ class AreaDAO:
         
         if fila is None:
             
+            cursor.close()
+            
             conn.close()
             
             raise AreaNoEncontradaError(
@@ -123,6 +151,8 @@ class AreaDAO:
         """, (nuevo_nombre, nueva_descripcion, id_area))
         
         conn.commit()
+        
+        cursor.close()
         
         conn.close()
         
@@ -150,6 +180,9 @@ class AreaDAO:
         """, (id_area,))
         
         if cursor.fetchone() is None:
+            
+            cursor.close()
+            
             conn.close()
             
             raise AreaNoEncontradaError(
