@@ -21,6 +21,9 @@ class CategoriaActivoDAO:
         """, (categoria.nombre,))
         
         if cursor.fetchone():
+            
+            cursor.close()
+            
             conn.close()
             
             raise CategoriaDuplicadaError(
@@ -52,6 +55,29 @@ class CategoriaActivoDAO:
         
         return categoria
     
+    def buscar_por_id(self, id_categoria):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id_categoria, nombre, descripcion
+            FROM categoria_activo
+            WHERE id_categoria = %s
+        """, (id_categoria,))
+        
+        fila = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        if fila is None:
+            return None
+        
+        categoria = CategoriaActivo(fila["nombre"], fila["descripcion"])
+        categoria.id_categoria = fila["id_categoria"]
+        
+        return categoria
+    
     def obtener_todos(self):
         conn = obtener_conexion()
         cursor = conn.cursor()
@@ -74,7 +100,7 @@ class CategoriaActivoDAO:
             )
             
             categoria.id_categoria = fila["id_categoria"]
-            categoria.append(categorias)
+            categorias.append(categoria)
         
         cursor.close()
         
@@ -95,6 +121,9 @@ class CategoriaActivoDAO:
         fila = cursor.fetchone()
         
         if fila is None:
+            
+            cursor.close()
+            
             conn.close()
             
             raise CategoriaNoEncontradaError(
@@ -119,6 +148,8 @@ class CategoriaActivoDAO:
         """,(nuevo_nombre,nueva_descripcion,id_categoria))
         
         conn.commit()
+        
+        cursor.close()
         
         conn.close()
         
@@ -146,14 +177,23 @@ class CategoriaActivoDAO:
         """, (id_categoria,))
         
         if cursor.fetchone() is None:
+            
+            cursor.close()
+            
             conn.close()
             
             raise CategoriaNoEncontradaError(
                 id_categoria
             )
 
+        cursor.execute("""
+            DELETE FROM categoria_activo
+            WHERE id_categoria = %s
+        """, (id_categoria,))
         
         conn.commit()
+        
+        cursor.close()
             
         conn.close()
         

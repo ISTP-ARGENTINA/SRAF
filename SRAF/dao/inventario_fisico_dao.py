@@ -26,11 +26,39 @@ class InventarioFisicoDAO:
         
         inventario.id_inventario = cursor.fetchone()["id_inventario"]
         
+        cursor.close()
+        
         conn.close()
         
         self.logger.info(
             f"Inventario registrado ID={inventario.id_inventario}"
         )
+        
+        return inventario
+    
+    def buscar_por_id(self, id_inventario):
+        conn = obtener_conexion()
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT id_inventario, anio, fecha_inicio, fecha_fin, estado
+            FROM inventario_fisico
+            WHERE id_inventario = %s
+        """, (id_inventario,))
+        
+        fila = cursor.fetchone()
+        
+        cursor.close()
+        conn.close()
+        
+        if fila is None:
+            return None
+        
+        inventario = InventarioFisico(fila["anio"])
+        inventario.id_inventario = fila["id_inventario"]
+        inventario.fecha_inicio = fila["fecha_inicio"]
+        inventario.fecha_fin = fila["fecha_fin"]
+        inventario.estado = fila["estado"]
         
         return inventario
     
@@ -64,6 +92,8 @@ class InventarioFisicoDAO:
             inventario.estado = fila["estado"]
             inventarios.append(inventario)
             
+        cursor.close()
+            
         conn.close()
         
         return inventarios
@@ -83,6 +113,9 @@ class InventarioFisicoDAO:
         fila = cursor.fetchone()
         
         if fila is None:
+            
+            cursor.close()
+            
             conn.close()
             
             raise InventarioNoEncontradoError(
@@ -110,6 +143,8 @@ class InventarioFisicoDAO:
         id_inventario))
         
         conn.commit()
+        
+        cursor.close()
             
         conn.close()
         
@@ -141,6 +176,8 @@ class InventarioFisicoDAO:
         
         if cursor.fetchone() is None:
             
+            cursor.close()
+            
             conn.close()
             
             raise InventarioNoEncontradoError(
@@ -154,6 +191,8 @@ class InventarioFisicoDAO:
         """, (id_inventario,))
         
         conn.commit()
+        
+        cursor.close()
         
         conn.close()
         

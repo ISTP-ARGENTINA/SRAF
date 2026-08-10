@@ -171,8 +171,6 @@ class ActivoYaEscaneadoError(Exception):
             f"El activo ID={id_activo} ya fue escaneado en el inventario ID={id_inventario}"
         )
 
-
-# --- Genericas ---
 class DatoInvalidoError(ValueError):
     def __init__(self, campo, motivo):
         super().__init__(f"Dato invalido en '{campo}': {motivo}")
