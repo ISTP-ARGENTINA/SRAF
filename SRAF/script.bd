@@ -53,7 +53,7 @@ ultimo_acceso TIMESTAMP
 -- TABLA: inventario_fisico (Cabecera macro)
 CREATE TABLE inventario_fisico (
 id_inventario SERIAL PRIMARY KEY,
-año INT NOT NULL CHECK (año >= 2020),
+anio INT NOT NULL CHECK (año >= 2020),
 fecha_inicio DATE NOT NULL DEFAULT CURRENT_DATE,
 fecha_fin DATE,
 estado estado_inventario_enum NOT NULL DEFAULT 'ABIERTO'

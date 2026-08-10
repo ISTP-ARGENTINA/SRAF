@@ -20,7 +20,7 @@ class UsuarioDAO:
         conn = obtener_conexion()
         cursor = conn.cursor()
         cursor.execute(
-            """INSERT INTO usuario (nombres, apellidos, nombre_usuario, correo, "contraseña", rol, estado)
+            """INSERT INTO usuario (nombres, apellidos, nombre_usuario, correo, "contrasena", rol, estado)
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING id_usuario, fecha_creacion, ultimo_acceso""",
             (usuario.nombres, usuario.apellidos, usuario.nombre_usuario,

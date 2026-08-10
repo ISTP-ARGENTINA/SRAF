@@ -1,20 +1,20 @@
 import datetime
 
 class Usuario():
-    def __init__(self, nombres, apellidos, nombre_usuario ,correo , contraseña, rol, estado="ACTIVO"):
+    def __init__(self, nombres, apellidos, nombre_usuario ,correo , contrasena, rol, estado="ACTIVO"):
         self.id_usuario       = None
         self.nombres          = nombres
         self.apellidos        = apellidos
         self.nombre_usuario   = nombre_usuario
         self.correo           = correo
-        self.contraseña       = contraseña
+        self.contrasena       = contrasena
         self.rol              = rol
         self.estado           = estado
         self.fecha_creacion = datetime.date.today()
         self.ultimo_acceso = None
 
     def __str__(self):
-            return f"[{self.id_usuario}] {self.nombres} {self.apellidos} | {self.nombre_usuario} | {self.correo} | {self.contraseña} | {self.rol} | {self.estado}"
+            return f"[{self.id_usuario}] {self.nombres} {self.apellidos} | {self.nombre_usuario} | {self.correo} | {self.contrasena} | {self.rol} | {self.estado}"
     # to_dict NO incluye la contraseña: nunca debe salir en una respuesta de API.
     def to_dict(self):
         return {

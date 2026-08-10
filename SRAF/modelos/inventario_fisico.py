@@ -12,7 +12,7 @@ class InventarioFisico:
         self.estado = "CERRADO"
 
     def __str__(self):
-        return f"[{self.id_inventario}] Año:{self.anio} | {self.fecha_inicio} - {self.fecha_fin or '-'} | {self.estado}"
+        return f"[{self.id_inventario}] Anio:{self.anio} | {self.fecha_inicio} - {self.fecha_fin or '-'} | {self.estado}"
         
     def to_dict(self):
         return{
