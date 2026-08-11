@@ -1,0 +1,17 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# DEPENDENCIAS — semana-14 (FastAPI + PostgreSQL)
+# Instalar con:  pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Framework web para construir la API REST
+fastapi==0.115.5
+
+# Servidor ASGI para ejecutar FastAPI (uvicorn main:app --reload)
+uvicorn[standard]==0.32.0
+
+# Librería para conectar Python con PostgreSQL
+psycopg2-binary==2.9.10
+
+# Validación de datos (se instala automáticamente con fastapi, pero se declara
+# aquí para dejar claro qué versión se usó en el desarrollo)
+pydantic>=2.10
