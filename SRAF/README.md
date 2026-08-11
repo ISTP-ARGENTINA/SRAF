@@ -137,3 +137,18 @@ AttributeError: 'XxxDAO' object has no attribute 'buscar_por_id'	El DAO relacion
 Autor
 
 Sistema desarrollado para ISTP ARGENTINA — Sistema de Registro de Activos Fijos (SRAF) v1.0
+
+Pasos:
+
+Busca "Variables de entorno" en el menú de inicio → "Editar las variables de entorno del sistema"
+Clic en "Variables de entorno..."
+En la sección de usuario (arriba), selecciona la variable Path → "Editar" → "Nuevo"
+Pega: C:\Program Files\PostgreSQL\18\bin
+Acepta todo
+Cierra completamente PowerShell y vuelve a abrirlo (importante, si no, no toma el cambio)cd C:\Users\HP G42\Desktop\SRAF\SRAF
+.\venv\Scripts\Activate.ps1
+
+$env:Path -split ';' | Select-String "PostgreSQL"
+
+cd C:\Users\HP G42\Desktop\SRAF\SRAF
+.\venv\Scripts\Activate.ps1
